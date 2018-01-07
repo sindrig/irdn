@@ -7,6 +7,7 @@ RUN mkdir /code
 
 COPY nginx.conf uwsgi_params /etc/nginx/
 COPY supervisor-app.ini /etc/supervisor.d/
+COPY supervisord.conf /etc/
 COPY requirements.txt /code
 RUN pip install -r /code/requirements.txt
 
