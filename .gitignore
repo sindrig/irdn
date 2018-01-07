@@ -1,2 +1,6 @@
 
 /venv/
+
+/irdn/logs/irdn-nginx-access.log
+
+/irdn/supervisord.pid
