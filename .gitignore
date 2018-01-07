@@ -4,3 +4,9 @@
 /irdn/logs/irdn-nginx-access.log
 
 /irdn/supervisord.pid
+
+*.pyc
+*.pyo
+__pycache__/
+
+/irdn/logs/irdn-nginx-access.log

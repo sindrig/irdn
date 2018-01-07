@@ -1,18 +1,45 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import Header from './components/Header';
+import {Route, Redirect, Switch} from 'react-router-dom';
 import './App.css';
+
+const Home = () => <div>Home</div>;
+const CV = () => <div>CV</div>;
+const Blog = () => <div>Blog</div>;
+
+const links = [
+    {
+        href: '/home',
+        text: 'Home',
+        component: Home,
+        key: 'home',
+        exact: true,
+    },
+    {
+        href: '/cv',
+        text: 'CV',
+        component: CV,
+        key: 'cv',
+    },
+    {
+        href: '/blog',
+        text: 'Blog',
+        component: Blog,
+        key: 'blog',
+    },
+]
 
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
+        <header>
+            <Header title="Sindri" links={links} />
         </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
+        <Switch>
+            {links.map(link => <Route path={link.href} component={link.component} key={link.key} exact={link.exact}/>)}
+            <Redirect from="/" to={links[0].href} />
+        </Switch>
       </div>
     );
   }

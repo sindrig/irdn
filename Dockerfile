@@ -13,11 +13,11 @@ RUN pip install uwsgi
 COPY nginx.conf uwsgi_params /etc/nginx/
 COPY supervisor-app.ini /etc/supervisor.d/
 COPY supervisord.conf /etc/
-# RUN touch /var/run/supervisor.sock
 
 COPY irdn /code
 
 EXPOSE 80
+EXPOSE 3000
 
 WORKDIR /code
 

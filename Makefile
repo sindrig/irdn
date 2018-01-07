@@ -15,6 +15,7 @@ dev: clean build
 	docker run \
 		--name ${CONTAINER_NAME} \
 		-p 4736:80 \
+		-p 3000:3000 \
 		-v ${current_dir}/irdn:/code \
 		${TAG}
 	# --mount source=irdn,target=/code/irdn \
