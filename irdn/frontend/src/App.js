@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import Header from './components/Header';
 import {Route, Redirect, Switch} from 'react-router-dom';
 import './App.css';
+import Home from './Home';
 
-const Home = () => <div>Home</div>;
 const CV = () => <div>CV</div>;
 const Blog = () => <div>Blog</div>;
 
