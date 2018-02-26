@@ -1,6 +1,7 @@
 import React from 'react';
 import {Grid, Row, Col} from 'react-bootstrap';
 import SocialIcons from 'react-social-icons';
+import sindri from './images/sindri.jpg'
 
 const socialUrls = [
     'https://github.com/sindrig',
@@ -14,7 +15,7 @@ export default () => (
     <Grid>
         <Row>
             <Col xs={4} md={4}>
-                <img src="/static/images/sindri.jpg" alt="Sindri Guðmundsson" />
+                <img src={sindri} alt="Sindri Guðmundsson" />
             </Col>
             <Col xs={8} md={8}>
                 <h1>About me</h1>
