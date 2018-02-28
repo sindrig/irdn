@@ -20,7 +20,7 @@ export default () => (
             <Col xs={8} md={8}>
                 <h1>About me</h1>
                 <p>
-                    I'm a developer, currently employed at <a href="https://tempo.io">Tempo</a> in Iceland.
+                    I'm a Developer, currently employed at <a href="https://tempo.io">Tempo</a> in Iceland.
                 </p>
                 <p>
                     I mostly do python.
