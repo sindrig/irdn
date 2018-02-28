@@ -5,7 +5,6 @@ import './App.css';
 import Home from './Home';
 
 const CV = () => <div>CV</div>;
-const Blog = () => <div>Blog</div>;
 
 const links = [
     {
@@ -20,12 +19,6 @@ const links = [
         text: 'CV',
         component: CV,
         key: 'cv',
-    },
-    {
-        href: '/blog',
-        text: 'Blog',
-        component: Blog,
-        key: 'blog',
     },
 ]
 
