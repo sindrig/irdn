@@ -23,7 +23,7 @@ export default () => (
                     I'm a developer, currently employed at <a href="https://tempo.io">Tempo</a> in Iceland.
                 </p>
                 <p>
-                    I mostly do python, but also javascript and java as required.
+                    I mostly do python.
                 </p>
                 <SocialIcons urls={socialUrls} color="black" />
             </Col>
