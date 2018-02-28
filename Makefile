@@ -1,6 +1,8 @@
-deploy:
+build:
 	npm run build
-	aws s3 sync build s3://irdn.is
+
+deploy:
+	s3-deploy './build/**' --cwd './build/' --region eu-west-1 --bucket irdn.is
 	
 install:
 	npm install
