@@ -1,4 +1,3 @@
-// create classes
 import React from 'react';
 import { Grid } from 'react-bootstrap';
 import Jobs from './cv/Jobs';

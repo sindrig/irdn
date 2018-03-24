@@ -27,6 +27,6 @@
   to { transform: rotate(360deg); }
 }
 
-img { max-width: 100%; height: auto; }
+img { max-width: 100%; height: auto; max-height: 100px}
 
 img.company-image { padding-top: 30px; }

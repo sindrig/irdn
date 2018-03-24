@@ -3,7 +3,8 @@ import { Route, Redirect, Switch } from 'react-router-dom';
 import Header from './components/Header';
 import './App.css';
 import Home from './components/Home';
-import CV from './components/CV'
+import CV from './components/CV';
+import About from './components/About';
 
 const links = [
     {
@@ -18,6 +19,12 @@ const links = [
         text: 'CV',
         component: CV,
         key: 'cv',
+    },
+    {
+        href: '/about',
+        text: 'About',
+        component: About,
+        key: 'about',
     },
 ];
 

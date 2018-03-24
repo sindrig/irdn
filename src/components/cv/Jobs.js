@@ -5,7 +5,9 @@ import { Row, Col } from 'react-bootstrap';
 import tempoImage from '../../images/tempo.svg';
 import hreyfisedillImage from '../../images/hreyfisedill.jpg';
 import trackwellImage from '../../images/trackwell.png';
-
+import hiImage from '../../images/hi.png';
+import vikesImage from '../../images/vikes.jpg';
+import { rowStyle } from '../styles';
 
 const Job = ({
     image,
@@ -15,9 +17,9 @@ const Job = ({
     toDate,
     children,
 }) => (
-    <Row>
+    <Row style={rowStyle}>
         <Col xs={2} md={2}>
-            <img src={image} alt={company} className="company-image"/>
+            <img src={image} alt={company} className="company-image" />
         </Col>
         <Col xs={10} md={10}>
             <div>
@@ -77,10 +79,28 @@ const Trackwell = () => (
     </Job>
 );
 
+const HI = () => (
+    <Job company="University of Iceland" fromDate="Jan 2012" toDate="May 2016" image={hiImage} companyLink="https://www.hi.is">
+        <p>
+            Software development (Þróun hugbúnaðar) assistant teacher spring 2012
+        </p>
+    </Job>
+);
+
+const Vikes = () => (
+    <Job company="Vikingur FC" fromDate="Sep 2001" toDate="May 2011" image={vikesImage} companyLink="http://www.vikingur.is">
+        <p>
+            Youth football (soccer) coach. Mostly U12 and U16 boys.
+        </p>
+    </Job>
+);
+
 export default () => (
     <div>
         <Tempo />
         <Hreyfikerfi />
         <Trackwell />
+        <HI />
+        <Vikes />
     </div>
 );
