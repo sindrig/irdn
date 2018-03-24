@@ -1,7 +1,7 @@
 import React from 'react';
-import {Grid, Row, Col} from 'react-bootstrap';
+import { Grid, Row, Col } from 'react-bootstrap';
 import SocialIcons from 'react-social-icons';
-import sindri from './images/sindri.jpg'
+import sindri from './images/sindri.jpg';
 
 const socialUrls = [
     'https://github.com/sindrig',
@@ -29,4 +29,4 @@ export default () => (
             </Col>
         </Row>
     </Grid>
-)
+);

@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { Route, Redirect, Switch } from 'react-router-dom';
 import Header from './components/Header';
-import {Route, Redirect, Switch} from 'react-router-dom';
 import './App.css';
 import Home from './Home';
 
@@ -20,22 +20,22 @@ const links = [
         component: CV,
         key: 'cv',
     },
-]
+];
 
-class App extends Component {
-  render() {
-    return (
-      <div className="App">
+const linkToRoute = link => (
+    <Route path={link.href} component={link.component} key={link.key} exact={link.exact} />
+);
+
+const App = () => (
+    <div className="App">
         <header>
             <Header title="Sindri" links={links} />
         </header>
         <Switch>
-            {links.map(link => <Route path={link.href} component={link.component} key={link.key} exact={link.exact}/>)}
+            {links.map(linkToRoute)}
             <Redirect from="/" to={links[0].href} />
         </Switch>
-      </div>
-    );
-  }
-}
+    </div>
+);
 
 export default App;
