@@ -2,9 +2,8 @@ import React from 'react';
 import { Route, Redirect, Switch } from 'react-router-dom';
 import Header from './components/Header';
 import './App.css';
-import Home from './Home';
-
-const CV = () => <div>CV</div>;
+import Home from './components/Home';
+import CV from './components/CV'
 
 const links = [
     {
