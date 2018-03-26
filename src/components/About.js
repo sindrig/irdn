@@ -26,7 +26,7 @@ export default () => (
             SSL licence from {links.letsencrypt}.
         </p>
         <p>
-            "Frontend" overkilled with {links.react}.
+            Actual page overkilled using {links.react}.
         </p>
         <p>
             CI using {links.lambci}. All code on {links.github}.
