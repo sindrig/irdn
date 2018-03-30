@@ -47,6 +47,7 @@ export default class Easter extends Component {
         this.onKeyDown = this.onKeyDown.bind(this);
         this.checkAnswer = this.checkAnswer.bind(this);
         this.clearAnswers = this.clearAnswers.bind(this);
+        this.previousQuestion = this.previousQuestion.bind(this);
         this.state = {
             currentAnswer: '',
             currentQuestion: null,
@@ -75,10 +76,10 @@ export default class Easter extends Component {
         return questions.find(question => !questionAnswers[question.id]);
     }
 
-    updateFromStorage() {
+    updateFromStorage(question) {
         const questionAnswers = getAnswers();
-        const currentQuestion = this.getNextUnanswered(questionAnswers || {});
-        const currentAnswer = '';
+        const currentQuestion = question || this.getNextUnanswered(questionAnswers || {});
+        const currentAnswer = questionAnswers[currentQuestion && currentQuestion.id] || '';
         return this.setState({ currentQuestion, currentAnswer });
     }
 
@@ -98,6 +99,19 @@ export default class Easter extends Component {
     clearAnswers() {
         setAnswers({});
         this.updateFromStorage();
+    }
+
+    previousQuestion() {
+        const { currentQuestion } = this.state;
+        const { questions } = this.props;
+        const currentIdx = currentQuestion ?
+            questions.findIndex(question => question.id === currentQuestion.id) :
+            -1;
+        if (currentIdx > 0) {
+            this.updateFromStorage(questions[currentIdx - 1]);
+        } else if (currentIdx === -1) {
+            this.updateFromStorage(questions[questions.length - 1]);
+        }
     }
 
     renderTextQuestion(question, elementId) {
@@ -141,6 +155,8 @@ export default class Easter extends Component {
                 <br />
                 <br />
                 <br />
+                <Button bsStyle="warning" onClick={this.previousQuestion}>Seinasta spurning</Button>
+                <br />
                 <Button bsStyle="danger" onClick={this.clearAnswers}>Hreinsa öll svör</Button>
             </div>
         );
@@ -170,7 +186,8 @@ export default class Easter extends Component {
                     {children}
                 </div>
                 <h4>Öll svör:</h4>
-                {questions.map(q => <span style={spanStyle}>{q.text}: <b>{q.answer}</b></span>)}
+                {questions.map(q => <span style={spanStyle} key={q.text}>{q.text}: <b>{q.answer}</b></span>)}
+                <Button bsStyle="warning" onClick={this.previousQuestion}>Seinasta spurning</Button>
                 <Button bsStyle="danger" onClick={this.clearAnswers}>Byrja aftur</Button>
             </div>
         );

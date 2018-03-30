@@ -51,6 +51,10 @@ const questions = [
         text: 'Nú fer þetta að verða búið. Hvar var hún Dorrit okkar fædd?',
         answer: 'Jerúsalem',
     },
+    {
+        text: 'Seinasta spurningin. Hver er best?',
+        answer: 'Heiður',
+    },
 ].map((q, i) => ({
     type: questionTypes.TEXT,
     ...q,
