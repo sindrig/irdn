@@ -8,7 +8,7 @@ const questions = [
         answer: 'Benedikt',
     },
     {
-        text: 'Vel gert. Næsta spurning. Hvað heitir forstjóri Mafíu Suðurlands?',
+        text: 'Vel gert. Næsta spurning. Hvað heitir forstjóri MafíuSamsölunnar?',
         answer: 'Ari Edwald',
     },
     {
