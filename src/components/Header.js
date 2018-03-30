@@ -17,13 +17,18 @@ const Header = (props) => {
                 </Navbar.Brand>
             </Navbar.Header>
             <Nav>
-                {links.map((link, num) => (
-                    <LinkContainer to={link.href} key={link.key}>
-                        <NavItem eventKey={num + 1}>
-                            {link.text}
-                        </NavItem>
-                    </LinkContainer>
-                ))}
+                {links.map((link, num) => {
+                    if (link.hidden && window.location.pathname !== link.href) {
+                        return null;
+                    }
+                    return (
+                        <LinkContainer to={link.href} key={link.key}>
+                            <NavItem eventKey={num + 1}>
+                                {link.text}
+                            </NavItem>
+                        </LinkContainer>
+                    );
+                })}
             </Nav>
         </Navbar>
     );

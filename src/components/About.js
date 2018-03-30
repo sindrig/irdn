@@ -5,7 +5,7 @@ const External = ({ href, children }) => <a href={href} target="_new">{children}
 
 External.propTypes = {
     href: PropTypes.string.isRequired,
-    children: PropTypes.element.isRequired,
+    children: PropTypes.node.isRequired,
 };
 
 const links = {
