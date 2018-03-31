@@ -24,6 +24,10 @@ const questions = [
         answer: 'Ptarmigan',
     },
     {
+        text: 'Hvað heitir nýjasta hetjan í Overwatch?',
+        answer: 'Brigitte',
+    },
+    {
         text: 'Hvert fóru Ragga og Jónsi í brúðkaupsferð?',
         answer: 'Santorini',
     },
