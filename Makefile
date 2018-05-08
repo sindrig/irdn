@@ -12,3 +12,6 @@ install:
 
 invalidate:
 	aws cloudfront create-invalidation --distribution-id E14VNCYKDXTTW5 --paths /index.html /paskar /home /about /cv --profile=irdn
+
+clean:
+	rm -rf build

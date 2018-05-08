@@ -3,7 +3,7 @@ import { Grid } from 'react-bootstrap';
 import Jobs from './cv/Jobs';
 
 export default () => (
-    <Grid>
+    <Grid className="cv-grid">
         <Jobs />
     </Grid>
 );
