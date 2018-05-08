@@ -1,4 +1,4 @@
-build: unpack-deps
+build:
 	npm run build
 
 deploy:
@@ -7,7 +7,7 @@ deploy:
 deploy-local:
 	./node_modules/.bin/s3-deploy './build/**' --cwd './build/' --region eu-west-1 --bucket irdn.is --profile=irdn
 
-install:
+install: unpack-deps
 	npm install
 
 invalidate:
