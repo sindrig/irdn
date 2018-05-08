@@ -5,6 +5,7 @@ import './App.css';
 import Home from './components/Home';
 import CV from './components/CV';
 import About from './components/About';
+import Easter2018 from './components/easter/Easter2018';
 
 const links = [
     {
@@ -26,13 +27,13 @@ const links = [
         component: About,
         key: 'about',
     },
-    // {
-    //     href: '/paskar',
-    //     text: 'Páskar 2018',
-    //     component: Easter2018,
-    //     key: 'paskar',
-    //     hidden: true,
-    // },
+    {
+        href: '/paskar',
+        text: 'Páskar 2018',
+        component: Easter2018,
+        key: 'paskar',
+        hidden: true,
+    },
 ];
 
 const linkToRoute = link => (
