@@ -1,4 +1,4 @@
-build:
+build: unpack-deps
 	npm run build
 
 deploy:
@@ -15,3 +15,9 @@ invalidate:
 
 clean:
 	rm -rf build
+
+update-deps:
+	tar czvf node_modules.tar.gz node_modules
+
+unpack-deps:
+	tar zxvf node_modules.tar.gz
