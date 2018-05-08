@@ -26,13 +26,6 @@ const links = [
         component: About,
         key: 'about',
     },
-    // {
-    //     href: '/paskar',
-    //     text: 'Páskar 2018',
-    //     component: Easter2018,
-    //     key: 'paskar',
-    //     hidden: true,
-    // },
 ];
 
 const linkToRoute = link => (
