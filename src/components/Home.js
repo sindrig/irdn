@@ -1,6 +1,6 @@
 import React from 'react';
 import { Grid, Row, Col } from 'react-bootstrap';
-import SocialIcons from 'react-social-icons';
+import { SocialIcon } from 'react-social-icons';
 import sindri from '../images/sindri.jpg';
 import awsCertified from '../images/aws_certified.png';
 
@@ -32,7 +32,7 @@ export default () => (
                         <img src={awsCertified} alt="AWS Certified Developer" />
                     </a>
                 </p>
-                <SocialIcons urls={socialUrls} color="black" />
+                {socialUrls.map(s => <SocialIcon url={s} color="black" key={s} />)}
             </Col>
         </Row>
     </Grid>
