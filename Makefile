@@ -20,4 +20,4 @@ update-deps:
 	tar czvf node_modules.tar.gz node_modules
 
 unpack-deps:
-	tar zxvf node_modules.tar.gz
+	tar zxf node_modules.tar.gz
