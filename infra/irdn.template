@@ -4,15 +4,13 @@
     "Parameters": {
         "CodeBucketName": {
             "Description": "S3 bucket that contains lambda code for ssl update",
-            "Type": "String",
-            "Default": "ssl_update_code.irdn.is"
+            "Type": "String"
         }
     },
     "Resources": {
-        "Fetcher": {
+        "SSLUpdater": {
             "Type": "AWS::Lambda::Function",
             "Properties": {
-                "FunctionName": "SSL-updater",
                 "Description": "Update ssl certificate for irdn.is",
                 "Handler": "main.handler",
                 "MemorySize": "512",
@@ -30,38 +28,6 @@
                     "S3Key": "code.zip"
                 },
                 "Runtime": "python3.6"
-            }
-        },
-        "BucketPolicy": {
-            "Type": "AWS::S3::BucketPolicy",
-            "Properties": {
-                "PolicyDocument": {
-                    "Id": "ResultBucketAllowPolicy",
-                    "Version": "2012-10-17",
-                    "Statement": [
-                        {
-                            "Sid": "PublicReadForGetBucketObjects",
-                            "Effect": "Allow",
-                            "Principal": "*",
-                            "Action": "s3:GetObject",
-                            "Resource": {
-                                "Fn::Join": [
-                                    "",
-                                    [
-                                        "arn:aws:s3:::",
-                                        {
-                                            "Ref": "S3BucketName"
-                                        },
-                                        "/*"
-                                    ]
-                                ]
-                            }
-                        }
-                    ]
-                },
-                "Bucket": {
-                    "Ref": "S3BucketName"
-                }
             }
         },
         "CloudFront": {
@@ -187,6 +153,12 @@
                     }
                 ]
             }
+        }
+    },
+    "Outputs": {
+        "LambdaFunctionName": {
+            "Description": "Name of the lambda function to update ssl",
+            "Value": {"Ref": "SSLUpdater"}
         }
     }
 }

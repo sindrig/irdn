@@ -7,7 +7,7 @@ build:
 	letsencrypt/build.sh
 
 upload:
-	letsencrypt/upload.sh
+	./upload.sh
 
 update: upload
 	python build.py cloudformation lambda trigger
