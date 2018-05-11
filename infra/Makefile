@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := update
 
 clean:
-	rm -rf code.zip suds*
+	letsencrypt/clean.sh
 
 install:
 	letsencrypt/build.sh
