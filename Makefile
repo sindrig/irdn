@@ -2,12 +2,13 @@ build:
 	npm run build
 
 deploy:
-	./node_modules/.bin/s3-deploy './build/**' --cwd './build/' --region eu-west-1 --bucket irdn.is
+	npm run deploy
+	# ./node_modules/.bin/s3-deploy './build/**' --cwd './build/' --region eu-west-1 --bucket irdn.is
 
 deploy-local:
 	./node_modules/.bin/s3-deploy './build/**' --cwd './build/' --region eu-west-1 --bucket irdn.is --profile=irdn
 
-install: unpack-deps
+install:
 	npm install
 
 invalidate:

@@ -13,9 +13,10 @@ DIR = os.path.dirname(os.path.abspath(__file__))
 with open(os.path.join(DIR, 'RESOURCE_BUCKET_NAME')) as f:
     RESOURCE_BUCKET_NAME = f.read()
 CLOUDFORMATION_STACK_S3 = (
-    'https://s3.amazonaws.com/%s/irdn.template'
+    'https://s3.amazonaws.com/%s/irdn-template.json'
 ) % (RESOURCE_BUCKET_NAME)
-CLOUDFORMATION_STACK_NAME = 'irdn-is-stack'
+with open(os.path.join(DIR, 'STACK_NAME')) as f:
+    CLOUDFORMATION_STACK_NAME = f.read()
 LAMBDA_CODE_S3 = (
     RESOURCE_BUCKET_NAME, 'code.zip'
 )
@@ -55,13 +56,22 @@ def update_cloudformation():
         StackName=CLOUDFORMATION_STACK_NAME,
         TemplateURL=CLOUDFORMATION_STACK_S3,
         Capabilities=['CAPABILITY_IAM'],
+        Parameters=[
+            {
+                'ParameterKey': 'CodeBucketName',
+                'ParameterValue': RESOURCE_BUCKET_NAME
+            },
+        ],
     )
     try:
-        client.describe_stacks(StackName=CLOUDFORMATION_STACK_NAME)
-        client.update_stack(**stack_kwargs)
+        stack = client.describe_stacks(StackName=CLOUDFORMATION_STACK_NAME)
+        if stack['Stacks'][0]['StackStatus'] == 'ROLLBACK_COMPLETE':
+            client.delete_stack(StackName=CLOUDFORMATION_STACK_NAME)
+            client.create_stack(**stack_kwargs)
+        else:
+            client.update_stack(**stack_kwargs)
     except botocore.exceptions.ClientError as e:
         if e.args[0].endswith('does not exist'):
-            # todo create stack
             client.create_stack(**stack_kwargs)
         elif e.args[0].endswith('No updates are to be performed.'):
             print('There are no updates to cloudformation stack, bailing out')
@@ -77,7 +87,7 @@ def update_cloudformation():
         if status != last_status:
             print(status)
         last_status = status
-        if status.endswith('COMPLETE'):
+        if status.endswith('COMPLETE') or status == 'ROLLBACK_FAILED':
             if status not in ('CREATE_COMPLETE', 'UPDATE_COMPLETE'):
                 print('Something went wrong')
                 events = client.describe_stack_events(

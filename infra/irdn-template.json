@@ -8,6 +8,15 @@
         }
     },
     "Resources": {
+        "WebPageBucket" : {
+            "Type" : "AWS::S3::Bucket",
+            "Properties": {
+                "WebsiteConfiguration": {
+                    "ErrorDocument": "index.html",
+                    "IndexDocument": "index.html"
+                }
+            }
+        },
         "SSLUpdater": {
             "Type": "AWS::Lambda::Function",
             "Properties": {
@@ -54,16 +63,17 @@
                         },
                         "MaxTTL": 0,
                         "MinTTL": 0,
-                        "PathPattern": "*",
                         "TargetOriginId": "irdn.is-cf-origin",
-                        "ViewerProtocolPolicy": "redirect-to-https"
+                        "ViewerProtocolPolicy": "allow-all"
                     },
                     "Enabled": true,
-                    "Origins": {
-                        "DomainName": "irdn.is.s3-website-eu-west-1.amazonaws.com",
-                        "Id": "irdn.is-cf-origin",
-                        "S3OriginConfig": {}
-                    }
+                    "Origins": [
+                        {
+                            "DomainName": { "Fn::GetAtt": ["WebPageBucket", "DomainName"]},
+                            "Id": "irdn.is-cf-origin",
+                            "S3OriginConfig": {}
+                        }
+                    ]
                 }
             }
         },
@@ -101,54 +111,81 @@
                     {
                         "PolicyName": "ManageCertificates",
                         "PolicyDocument": {
-                            "Effect": "Allow",
-                            "Action": [
-                                "iam:UploadServerCertificate",
-                                "iam:UpdateServerCertificate",
-                                "iam:DeleteServerCertificate",
-                                "iam:ListServerCertificates"
-                            ],
-                            "Resource": [
-                                "*"
-                            ]
+                            "Statement": {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "iam:UploadServerCertificate",
+                                    "iam:UpdateServerCertificate",
+                                    "iam:DeleteServerCertificate",
+                                    "iam:ListServerCertificates"
+                                ],
+                                "Resource": [
+                                    "*"
+                                ]
+                            }
                         }
                     },
                     {
                         "PolicyName": "PutObjectBucket",
                         "PolicyDocument": {
-                            "Effect": "Allow",
-                            "Action": [
-                                "s3:PutObject",
-                                "s3:PutObjectACL"
-                            ],
-                            "Resource": [
-                                "arn:aws:s3:::irdn.is/*"
-                            ]
+                            "Statement": {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "s3:PutObject",
+                                    "s3:PutObjectACL"
+                                ],
+                                "Resource": [
+                                    {
+                                        "Fn::Join": [
+                                            "/",
+                                            [
+                                                {"Fn::GetAtt": ["WebPageBucket", "Arn"]},
+                                                "*"
+                                            ]
+
+                                        ]
+                                    }
+                                ]
+                            }
                         }
                     },
                     {
                         "PolicyName": "DeleteObjectBucket",
                         "PolicyDocument": {
-                            "Effect": "Allow",
-                            "Action": [
-                                "s3:DeleteObject"
-                            ],
-                            "Resource": [
-                                "arn:aws:s3:::irdn.is/.well-known/*"
-                            ]
+                            "Statement": {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "s3:DeleteObject"
+                                ],
+                                "Resource": [
+                                    {
+                                        "Fn::Join": [
+                                            "/",
+                                            [
+                                                {"Fn::GetAtt": ["WebPageBucket", "Arn"]},
+                                                ".well-known",
+                                                "*"
+                                            ]
+
+                                        ]
+                                    }
+                                ]
+                            }
                         }
                     },
                     {
                         "PolicyName": "DistributionStuff",
                         "PolicyDocument": {
-                            "Effect": "Allow",
-                            "Action": [
-                                "cloudfront:GetDistributionConfig",
-                                "cloudfront:UpdateDistribution"
-                            ],
-                            "Resource": [
-                                "*"
-                            ]
+                            "Statement": {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "cloudfront:GetDistributionConfig",
+                                    "cloudfront:UpdateDistribution"
+                                ],
+                                "Resource": [
+                                    "*"
+                                ]
+                            }
                         }
                     }
                 ]
@@ -159,6 +196,10 @@
         "LambdaFunctionName": {
             "Description": "Name of the lambda function to update ssl",
             "Value": {"Ref": "SSLUpdater"}
+        },
+        "WebPageBucket": {
+            "Description": "Bucket to store webpage",
+            "Value": {"Fn::GetAtt": ["WebPageBucket", "Arn"]}
         }
     }
 }
