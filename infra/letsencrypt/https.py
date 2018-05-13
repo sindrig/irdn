@@ -1,4 +1,5 @@
 import os
+import tempfile
 import boto3
 
 from certbot.main import main as certbot_main  # noqa
@@ -24,7 +25,7 @@ def get_stack_outputs():
 
 def main(renew):
     outputs = get_stack_outputs()
-    workdir = os.path.dirname(os.path.abspath(__file__))
+    workdir = tempfile.mkdtemp()
     output = os.path.join(workdir, 'output')
 
     credentials = session.get_credentials()
