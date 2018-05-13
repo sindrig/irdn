@@ -13,7 +13,7 @@
     "react-router-dom": "^4.2.2",
     "react-scripts": "1.1.1",
     "react-social-icons": "^3.0.0",
-    "s3-deploy": "^0.10.0"
+    "s3-deploy": "^1.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
