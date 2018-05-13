@@ -19,17 +19,17 @@ AWS.config.update(config);
 const CloudFormation = new AWS.CloudFormation();
 
 
-const getS3Bucket = StackName => new Promise((resolve, reject) => {
+const getStackOutputs = StackName => new Promise((resolve, reject) => {
     CloudFormation.describeStacks({ StackName }, (err, stacks) => {
         if (err) {
             return reject(err);
         }
         return stacks.Stacks.forEach((stack) => {
+            const result = {};
             stack.Outputs.forEach((output) => {
-                if (output.OutputKey === 'WebPageBucket') {
-                    resolve(output.OutputValue);
-                }
+                result[output.OutputKey] = output.OutputValue;
             });
+            resolve(result);
         });
     });
 });
@@ -57,13 +57,13 @@ function runScript(script, args, callback) {
     });
 }
 
-const uploadFiles = (BucketArn) => {
-    const BucketName = BucketArn.replace('arn:aws:s3:::', '');
+const uploadFiles = ({ WebPageBucket, CloudFrontDistribution }) => {
     const args = [
         './build/**',
         '--cwd', './build/',
         '--region', 'eu-west-1',
-        '--bucket', BucketName,
+        '--bucket', WebPageBucket,
+        '--distId', CloudFrontDistribution,
     ];
     if (process.env.LOCAL) {
         args.push('--profile');
@@ -76,4 +76,4 @@ const uploadFiles = (BucketArn) => {
     });
 };
 
-fs.readFile('infra/STACK_NAME', 'utf8', (err, StackName) => getS3Bucket(StackName).then(uploadFiles));
+fs.readFile('infra/STACK_NAME', 'utf8', (err, StackName) => getStackOutputs(StackName).then(uploadFiles));
