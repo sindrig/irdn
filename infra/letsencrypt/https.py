@@ -1,48 +1,6 @@
 import os
 import boto3
 
-import pkg_resources
-old_iter_entry_points = pkg_resources.iter_entry_points
-
-
-def wrapped(group, name=None):
-    # Not cool, not hip, but certbot gives us no other options
-    result = old_iter_entry_points(group, name=name)
-    if group == 'certbot.plugins':
-        result = list(result)[:-2]
-        entries = [(e.name, e.module_name, e.attrs) for e in result]
-        to_create = [
-            (
-                'auth',
-                'certbot_s3front.authenticator',
-                ('Authenticator', ),
-            ),
-            (
-                'installer',
-                'certbot_s3front.installer',
-                ('Installer', ),
-            ),
-        ]
-        dist = pkg_resources.Distribution(
-            project_name='certbot_s3front'
-        )
-        for data in to_create:
-            if data not in entries:
-                name, module_name, attrs = data
-
-                result.append(
-                    pkg_resources.EntryPoint(
-                        name,
-                        module_name,
-                        attrs=attrs,
-                        dist=dist,
-                    )
-                )
-    return result
-
-
-# pkg_resources.iter_entry_points = wrapped
-
 from certbot.main import main as certbot_main  # noqa
 
 REGION = 'eu-west-1'
