@@ -211,6 +211,20 @@
                                 ]
                             }
                         }
+                    },
+                    {
+                        "PolicyName": "LogStuff",
+                        "PolicyDocument": {
+                            "Statement": {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "logs:*"
+                                ],
+                                "Resource": [
+                                    "arn:aws:logs:::*"
+                                ]
+                            }
+                        }
                     }
                 ]
             }
