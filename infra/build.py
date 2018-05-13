@@ -1,4 +1,5 @@
 import os
+import re
 import argparse
 import time
 import datetime
@@ -61,8 +62,22 @@ def trigger_lambda():
         pprint.pprint(response)
 
 
+def get_certificate_id(domain):
+    certificate_regex = re.compile('le-(.*)-\\d+')
+    client = session.client('iam')
+    paginator = client.get_paginator('list_server_certificates')
+    for entry in paginator.paginate():
+        for certificate in entry['ServerCertificateMetadataList']:
+            cert_name = certificate['ServerCertificateName']
+            search = certificate_regex.search(cert_name)
+            if search and search.groups() and search.groups()[0] == domain:
+                return certificate['ServerCertificateId']
+
+
 def update_cloudformation():
     '''Updates cloudformation stack with definition in S3'''
+    domain = os.getenv('DOMAIN', 'irdn.is')
+    certificate_id = get_certificate_id(domain)
     starttime = datetime.datetime.utcnow()
     client = session.client('cloudformation', region_name=REGION)
     stack_kwargs = dict(
@@ -73,6 +88,14 @@ def update_cloudformation():
             {
                 'ParameterKey': 'CodeBucketName',
                 'ParameterValue': RESOURCE_BUCKET_NAME
+            },
+            {
+                'ParameterKey': 'Domain',
+                'ParameterValue': domain
+            },
+            {
+                'ParameterKey': 'CertificateId',
+                'ParameterValue': certificate_id or ''
             },
         ],
     )

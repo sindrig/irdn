@@ -11,6 +11,14 @@
             "Type": "String",
             "Default": "irdn.is"
         },
+        "CertificateId": {
+            "Description": "SSLCertificate to use. If not specified, defaults to default cloudformation certificate.",
+            "Type": "String",
+            "Default": ""
+        },
+    },
+    "Conditions": {
+        "SSLCertificateEmpty": {"Fn::Equals": [{"Ref": "CertificateId"}, ""]}
     },
     "Resources": {
         "WebPageBucket" : {
@@ -51,6 +59,11 @@
                     "Aliases": [
                         {"Ref": "Domain"}
                     ],
+                    "ViewerCertificate": {
+                        "CloudFrontDefaultCertificate": {"Fn::If": ["SSLCertificateEmpty", true, {"Ref" : "AWS::NoValue"}]},
+                        "IamCertificateId": {"Fn::If": ["SSLCertificateEmpty", {"Ref" : "AWS::NoValue"}, {"Ref": "CertificateId"}]},
+                        "SslSupportMethod": {"Fn::If": ["SSLCertificateEmpty", {"Ref" : "AWS::NoValue"}, "sni-only"]},
+                    },
                     "DefaultCacheBehavior": {
                         "AllowedMethods": [
                             "DELETE",
