@@ -416,6 +416,16 @@
                                 "Resource": "*"
                             }
                         }
+                    },
+                    {
+                        "PolicyName": "CreateInvalidation",
+                        "PolicyDocument": {
+                            "Statement": {
+                                "Effect": "Allow",
+                                "Action": "cloudfront:CreateInvalidation",
+                                "Resource": "*"
+                            }
+                        }
                     }
                 ]
             }
