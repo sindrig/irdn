@@ -64,7 +64,7 @@
                         "MaxTTL": 0,
                         "MinTTL": 0,
                         "TargetOriginId": "irdn.is-cf-origin",
-                        "ViewerProtocolPolicy": "allow-all"
+                        "ViewerProtocolPolicy": "redirect-to-https"
                     },
                     "Enabled": true,
                     "Origins": [
