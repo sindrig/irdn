@@ -246,6 +246,10 @@
         "CloudFrontDistribution": {
             "Description": "Id of the CloudFront distribution",
             "Value": {"Ref": "CloudFront"}
+        },
+        "Domain": {
+            "Description": "Domain of the webpage",
+            "Value": {"Ref": "Domain"}
         }
     }
 }
