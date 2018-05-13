@@ -16,13 +16,3 @@ then
         --create-bucket-configuration '{"LocationConstraint": "EU"}' \
         --profile=irdn
 fi
-# SIZE_IN_S3=$(aws s3api head-object --bucket $BUCKET_NAME --key code.zip --profile=irdn | grep ContentLength | cut -d":" -f2 | cut -d"," -f1 | cut -d" " -f2)
-# SIZE_IN_FS=$(stat --printf="%s" $DIR/letsencrypt/code.zip)
-# if [ $SIZE_IN_FS -eq $SIZE_IN_S3 ]; then
-#     echo "code.zip equals in s3, not uploading"
-# else
-#     echo "code.zip differs, uploading"
-#     aws s3 cp $DIR/letsencrypt/code.zip s3://$BUCKET_NAME/code.zip --profile=irdn
-# fi
-# aws s3 cp $DIR/irdn-template.json s3://$BUCKET_NAME/irdn-template.json --profile=irdn
-# aws s3 cp $DIR/lambci-template.json s3://$BUCKET_NAME/lambci-template.json --profile=irdn
