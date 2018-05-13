@@ -15,3 +15,4 @@ aws s3api create-bucket \
     --profile=irdn
 aws s3 cp $DIR/letsencrypt/code.zip s3://$BUCKET_NAME/code.zip --profile=irdn
 aws s3 cp $DIR/irdn-template.json s3://$BUCKET_NAME/irdn-template.json --profile=irdn
+aws s3 cp $DIR/lambci-template.json s3://$BUCKET_NAME/lambci-template.json --profile=irdn
