@@ -4,8 +4,9 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
     cd $DIR
     cp ../STACK_NAME .
 
+    rm -rf package
     mkdir package
-    cp -r * package
+    cp *.py STACK_NAME package
 
     virtualenv venv
     . venv/bin/activate
@@ -17,9 +18,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
         python setup.py install
     )
 
-    # pip install -r requirements.txt
     cp -r venv/lib/python3.6/site-packages/. package
-    # cp -r venv/src/. package
 
     cd package
     zip -qyr ../code.zip . -x@../.lambdaignore

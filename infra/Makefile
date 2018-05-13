@@ -6,8 +6,8 @@ clean:
 build:
 	letsencrypt/build.sh
 
-upload:
-	./upload.sh
+prepare:
+	./prepare.sh
 
-update: upload
+update: prepare
 	python build.py cloudformation lambda # trigger

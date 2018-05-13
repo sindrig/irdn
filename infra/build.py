@@ -41,19 +41,19 @@ def update_lambda():
     '''Updates lambda code with code from S3'''
     lambda_function_name = _get_lambda_function_name()
     client = session.client('lambda', region_name=REGION)
-    s3_bucket, s3_key = LAMBDA_CODE_S3
-    client.update_function_code(
-        FunctionName=lambda_function_name,
-        S3Bucket=s3_bucket,
-        S3Key=s3_key,
-    )
+    with open(os.path.join(DIR, 'letsencrypt', 'code.zip'), 'rb') as f:
+        client.update_function_code(
+            FunctionName=lambda_function_name,
+            ZipFile=f.read(),
+        )
     print('Lambda function %s updated' % (lambda_function_name, ))
 
 
 def trigger_lambda():
     client = session.client('lambda', region_name=REGION)
+    lambda_function_name = _get_lambda_function_name()
     response = client.invoke(
-        FunctionName=LAMBDA_FUNCTION_NAME,
+        FunctionName=lambda_function_name,
     )
     if response['StatusCode'] == 200:
         print('Lambda function triggered')
@@ -74,15 +74,17 @@ def get_certificate_id(domain):
                 return certificate['ServerCertificateId']
 
 
-def update_cloudformation():
+def update_cloudformation(template='irdn-template.json'):
     '''Updates cloudformation stack with definition in S3'''
     domain = os.getenv('DOMAIN', 'irdn.is')
     certificate_id = get_certificate_id(domain)
     starttime = datetime.datetime.utcnow()
     client = session.client('cloudformation', region_name=REGION)
+    with open(os.path.join(DIR, template)) as f:
+        template_body = f.read()
     stack_kwargs = dict(
         StackName=CLOUDFORMATION_STACK_NAME,
-        TemplateURL=CLOUDFORMATION_STACK_S3,
+        TemplateBody=template_body,
         Capabilities=['CAPABILITY_IAM'],
         Parameters=[
             {

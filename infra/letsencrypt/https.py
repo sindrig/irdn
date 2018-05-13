@@ -5,6 +5,7 @@ import boto3
 from certbot.main import main as certbot_main  # noqa
 
 REGION = 'eu-west-1'
+PHONE_NUMBER = '+3548682226'
 session_kwargs = {}
 if os.getenv('LOCAL'):
     session_kwargs['profile_name'] = 'irdn'
@@ -21,6 +22,20 @@ def get_stack_outputs():
         output['OutputKey']: output['OutputValue']
         for output in stack['Outputs']
     }
+
+
+def notify(message):
+    client = session.client('sns', region_name=REGION)
+    client.publish(
+        PhoneNumber=PHONE_NUMBER,
+        Message=message,
+        MessageAttributes={
+            'AWS.SNS.SMS.SenderID': {
+                'DataType': 'String',
+                'StringValue': 'irdnis'
+            }
+        }
+    )
 
 
 def main(renew):
@@ -43,21 +58,23 @@ def main(renew):
         '-a', 'certbot-s3front:auth',
         '--certbot-s3front:auth-s3-bucket', outputs['WebPageBucket'],
         '--certbot-s3front:auth-s3-region', REGION,
-        # '--certbot-s3front:auth-s3-directory', 'your-bucket-directory',
         '-i', 'certbot-s3front:installer',
         '--certbot-s3front:installer-cf-distribution-id',
         outputs['CloudFrontDistribution'],
         '--config-dir', output,
         '--work-dir', workdir,
         '--logs-dir', output,
-        '-d', 'irdn.is',
+        '-d', outputs.get('Domain', 'irdn.is'),
         '-m', 'sindrigudmundsson@gmail.com',
         '-n'
     ]
     if renew:
         sub_args += ['--renew-by-default', '--text']
+    # Testing
+    sub_args += ['--staging']
 
     certbot_main(cli_args=sub_args)
+    notify('Certbot lambda run. Check CloudWatch for logs.')
 
 
 def handler(json_input, context):

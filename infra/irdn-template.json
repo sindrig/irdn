@@ -242,6 +242,20 @@
                                 ]
                             }
                         }
+                    },
+                    {
+                        "PolicyName": "SNSStuff",
+                        "PolicyDocument": {
+                            "Statement": {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "SNS:Publish"
+                                ],
+                                "Resource": [
+                                    "*"
+                                ]
+                            }
+                        }
                     }
                 ]
             }
