@@ -1,2 +1,1 @@
-certbot==0.22.0
-certbot-s3front==0.3.1
+-e git://github.com/crgwbr/certbot-s3front.git#egg=certbot-s3front

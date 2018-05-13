@@ -1,14 +1,11 @@
 const AWS = require('aws-sdk');
 const fs = require('fs');
-const glob = require('glob');
-const path = require('path');
+const childProcess = require('child_process');
 
 const config = {
     region: 'eu-west-1',
     sslEnabled: true,
 };
-
-const BUILD_DIR = path.resolve(__dirname, 'build');
 
 // TODO check build dir exists
 
@@ -37,41 +34,46 @@ const getS3Bucket = StackName => new Promise((resolve, reject) => {
     });
 });
 
-const applyToFiles = (files, callback) =>
-    files.forEach(file => fs.stat(file, (err2, stat) => {
-        if (!stat || stat.isFile()) {
-            callback(file);
-        }
-    }));
+
+function runScript(script, args, callback) {
+    // keep track of whether callback has been invoked to prevent multiple invocations
+    let invoked = false;
+
+    const prokess = childProcess.fork(script, args);
+
+    // listen for errors as they may prevent the exit event from firing
+    prokess.on('error', (err) => {
+        if (invoked) return;
+        invoked = true;
+        callback(err);
+    });
+
+    // execute the callback once the prokess has finished running
+    prokess.on('exit', (code) => {
+        if (invoked) return;
+        invoked = true;
+        const err = code === 0 ? null : new Error(`exit code ${code}`);
+        callback(err);
+    });
+}
 
 const uploadFiles = (BucketArn) => {
-    const Bucket = BucketArn.replace('arn:aws:s3:::', '');
-    const s3 = new AWS.S3({
-        params: { Bucket },
+    const BucketName = BucketArn.replace('arn:aws:s3:::', '');
+    const args = [
+        './build/**',
+        '--cwd', './build/',
+        '--region', 'eu-west-1',
+        '--bucket', BucketName,
+    ];
+    if (process.env.LOCAL) {
+        args.push('--profile');
+        args.push('irdn');
+    }
+    const script = './node_modules/.bin/s3-deploy';
+    runScript(script, args, (err) => {
+        if (err) throw err;
+        console.log('finished upload');
     });
-    glob(`${BUILD_DIR}/**`, (err, files) =>
-        applyToFiles(
-            files,
-            (absoluteFilePath) => {
-                const relativeFilePath = path.relative(BUILD_DIR, absoluteFilePath);
-                fs.readFile(absoluteFilePath, 'utf8', (readErr, data) => {
-                    if (readErr) {
-                        console.err(readErr);
-                        process.exit(1);
-                    }
-                    s3.upload({
-                        Key: relativeFilePath,
-                        Body: data,
-                        ACL: 'public-read',
-                    }, (writeErr) => {
-                        if (writeErr) {
-                            console.log('There was an error uploading a file: ', err.message);
-                        }
-                        console.log(`Uploaded: ${relativeFilePath}`);
-                    });
-                });
-            },
-        ));
 };
 
 fs.readFile('infra/STACK_NAME', 'utf8', (err, StackName) => getS3Bucket(StackName).then(uploadFiles));

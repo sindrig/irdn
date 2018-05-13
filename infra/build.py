@@ -24,16 +24,29 @@ LAMBDA_CODE_S3 = (
 session = boto3.Session(profile_name='irdn')
 
 
+def _get_lambda_function_name():
+    cloudformation = session.client('cloudformation', region_name=REGION)
+    outputs = cloudformation.describe_stacks(
+        StackName=CLOUDFORMATION_STACK_NAME
+    )['Stacks'][0]['Outputs']
+    return [
+        output['OutputValue']
+        for output in outputs
+        if output['OutputKey'] == 'LambdaFunctionName'
+    ][0]
+
+
 def update_lambda():
     '''Updates lambda code with code from S3'''
+    lambda_function_name = _get_lambda_function_name()
     client = session.client('lambda', region_name=REGION)
     s3_bucket, s3_key = LAMBDA_CODE_S3
     client.update_function_code(
-        FunctionName=LAMBDA_FUNCTION_NAME,
+        FunctionName=lambda_function_name,
         S3Bucket=s3_bucket,
         S3Key=s3_key,
     )
-    print('Lambda function %s updated' % (LAMBDA_FUNCTION_NAME, ))
+    print('Lambda function %s updated' % (lambda_function_name, ))
 
 
 def trigger_lambda():

@@ -10,4 +10,4 @@ upload:
 	./upload.sh
 
 update: upload
-	python build.py cloudformation lambda trigger
+	python build.py cloudformation lambda # trigger

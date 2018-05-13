@@ -21,7 +21,7 @@
             "Type": "AWS::Lambda::Function",
             "Properties": {
                 "Description": "Update ssl certificate for irdn.is",
-                "Handler": "main.handler",
+                "Handler": "https.handler",
                 "MemorySize": "512",
                 "Timeout": "300",
                 "Role": {
@@ -69,9 +69,19 @@
                     "Enabled": true,
                     "Origins": [
                         {
-                            "DomainName": { "Fn::GetAtt": ["WebPageBucket", "DomainName"]},
+                            "DomainName": {
+                                "Fn::Join": [
+                                    ".",
+                                    [
+                                        { "Ref": "WebPageBucket" },
+                                        "s3-website-eu-west-1.amazonaws.com"
+                                    ]
+                                ]
+                            },
                             "Id": "irdn.is-cf-origin",
-                            "S3OriginConfig": {}
+                            "CustomOriginConfig": {
+                                "OriginProtocolPolicy": "http-only"
+                            }
                         }
                     ]
                 }
@@ -187,6 +197,20 @@
                                 ]
                             }
                         }
+                    },
+                    {
+                        "PolicyName": "StackStuff",
+                        "PolicyDocument": {
+                            "Statement": {
+                                "Effect": "Allow",
+                                "Action": [
+                                    "cloudformation:DescribeStacks"
+                                ],
+                                "Resource": [
+                                    "*"
+                                ]
+                            }
+                        }
                     }
                 ]
             }
@@ -199,7 +223,11 @@
         },
         "WebPageBucket": {
             "Description": "Bucket to store webpage",
-            "Value": {"Fn::GetAtt": ["WebPageBucket", "Arn"]}
+            "Value": {"Ref": "WebPageBucket"}
+        },
+        "CloudFrontDistribution": {
+            "Description": "Id of the CloudFront distribution",
+            "Value": {"Ref": "CloudFront"}
         }
     }
 }
