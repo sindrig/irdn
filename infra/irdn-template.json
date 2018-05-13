@@ -5,7 +5,12 @@
         "CodeBucketName": {
             "Description": "S3 bucket that contains lambda code for ssl update",
             "Type": "String"
-        }
+        },
+        "Domain": {
+            "Description": "Domain to host page on",
+            "Type": "String",
+            "Default": "irdn.is"
+        },
     },
     "Resources": {
         "WebPageBucket" : {
@@ -20,7 +25,7 @@
         "SSLUpdater": {
             "Type": "AWS::Lambda::Function",
             "Properties": {
-                "Description": "Update ssl certificate for irdn.is",
+                "Description": {"Fn::Join": [" ", ["Update ssl certificate for", {"Ref": "Domain"}]]},
                 "Handler": "https.handler",
                 "MemorySize": "512",
                 "Timeout": "300",
@@ -44,8 +49,7 @@
             "Properties": {
                 "DistributionConfig": {
                     "Aliases": [
-                        "www.irdn.is",
-                        "irdn.is"
+                        {"Ref": "Domain"}
                     ],
                     "DefaultCacheBehavior": {
                         "AllowedMethods": [
@@ -63,7 +67,7 @@
                         },
                         "MaxTTL": 0,
                         "MinTTL": 0,
-                        "TargetOriginId": "irdn.is-cf-origin",
+                        "TargetOriginId": {"Fn::Join": ["-", [{"Ref": "Domain"}, "cf", "-origin"]]},
                         "ViewerProtocolPolicy": "redirect-to-https"
                     },
                     "Enabled": true,
@@ -78,7 +82,7 @@
                                     ]
                                 ]
                             },
-                            "Id": "irdn.is-cf-origin",
+                            "Id": {"Fn::Join": ["-", [{"Ref": "Domain"}, "cf", "-origin"]]},
                             "CustomOriginConfig": {
                                 "OriginProtocolPolicy": "http-only"
                             }
@@ -92,7 +96,7 @@
             "Properties": {
                 "HostedZoneName": "irdn.is.",
                 "Comment": "Alias for s3 website",
-                "Name": "irdn.is",
+                "Name": {"Ref": "Domain"},
                 "Type": "A",
                 "AliasTarget": {
                     "DNSName": {
