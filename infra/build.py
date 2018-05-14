@@ -65,13 +65,14 @@ def trigger_lambda():
 def get_certificate_id(domain):
     certificate_regex = re.compile('le-(.*)-\\d+')
     client = session.client('iam')
-    paginator = client.get_paginator('list_server_certificates')
-    for entry in paginator.paginate():
-        for certificate in entry['ServerCertificateMetadataList']:
-            cert_name = certificate['ServerCertificateName']
-            search = certificate_regex.search(cert_name)
-            if search and search.groups() and search.groups()[0] == domain:
-                return certificate['ServerCertificateId']
+    certificates = client.list_server_certificates(
+        PathPrefix="/cloudfront/letsencrypt/"
+    )
+    for certificate in certificates['ServerCertificateMetadataList']:
+        cert_name = certificate['ServerCertificateName']
+        search = certificate_regex.search(cert_name)
+        if search and search.groups() and search.groups()[0] == domain:
+            return certificate['ServerCertificateId']
 
 
 def update_cloudformation(template='irdn-template.json'):
