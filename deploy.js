@@ -80,8 +80,8 @@ const getStack = () => branch().then((branchName) => {
     }
     console.log('expectedStackName', expectedStackName);
     return new Promise((resolve, reject) => {
-        let resolved = false;
         CloudFormation.describeStacks({}, (err, stacks) => {
+            let resolved = false;
             if (err) {
                 return reject(err);
             }
@@ -100,18 +100,19 @@ const getStack = () => branch().then((branchName) => {
                     resolve(result);
                 }
             });
+            if (!resolved) {
+                reject(new Error('No stack matches'));
+            }
         });
-        if (!resolved) {
-            reject(new Error('Stack not found'));
-        }
     });
 });
 
 const args = process.argv.slice(2);
 if (args.indexOf('--check') >= 0) {
-    getStack().catch(() => {
+    getStack().catch((err) => {
         console.log('Stack not found, bailing out');
-        process.exit(1)
+        console.log(err);
+        process.exit(1);
     });
 } else {
     getStack().then(uploadFiles);
