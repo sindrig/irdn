@@ -69,9 +69,14 @@ const uploadFiles = ({ outputs: { WebPageBucket, CloudFrontDistribution } }) => 
 };
 
 const getStack = () => branch().then((branchName) => {
+    let branchNameToUse = branchName;
+    if (!branchName) {
+        console.log('Trying to use LAMBCI_BRANCH env variable for branch');
+        branchNameToUse = process.env.LAMBCI_BRANCH;
+    }
     let expectedStackName = 'irdn';
-    if (branchName !== 'master') {
-        expectedStackName = `${branchName}-${expectedStackName}`;
+    if (branchNameToUse !== 'master') {
+        expectedStackName = `${branchNameToUse}-${expectedStackName}`;
     }
     console.log('expectedStackName', expectedStackName);
     return new Promise((resolve, reject) => {
