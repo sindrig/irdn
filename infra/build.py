@@ -79,7 +79,7 @@ def update_cloudformation(template='irdn-template.json'):
     '''Updates cloudformation stack with definition in S3'''
     domain = utils.get_domain()
     stack_name = utils.get_stack_name()
-    certificate_id = utils.get_certificate(session)['ServerCertificateId']
+    certificate = utils.get_certificate(session) or {}
     with open(os.path.join(DIR, template)) as f:
         template_body = f.read()
     stack_kwargs = dict(
@@ -93,7 +93,7 @@ def update_cloudformation(template='irdn-template.json'):
             },
             {
                 'ParameterKey': 'CertificateId',
-                'ParameterValue': certificate_id or ''
+                'ParameterValue': certificate.get('ServerCertificateId', '')
             },
         ],
     )
