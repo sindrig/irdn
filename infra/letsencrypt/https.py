@@ -87,7 +87,7 @@ def main(renew):
     if renew:
         sub_args += ['--renew-by-default', '--text']
     # Testing
-    sub_args += ['--staging']
+    # sub_args += ['--staging']
 
     certbot_main(cli_args=sub_args)
     notify('Certbot lambda run. Check CloudWatch for logs.')
