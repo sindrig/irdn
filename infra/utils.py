@@ -55,8 +55,10 @@ def confirm_or_exit(msg):
 
 
 def wait_for_stack_update_finish(cloudformation, stack_name):
+    sleeptime = 1
     starttime = datetime.datetime.utcnow()
     last_status = None
+    iterations = 0
     while True:
         stacks = cloudformation.describe_stacks(
             StackName=stack_name
@@ -81,7 +83,10 @@ def wait_for_stack_update_finish(cloudformation, stack_name):
                         event.get('ResourceStatusReason', '')
                     )
             break
-        time.sleep(1)
+        time.sleep(sleeptime)
+        iterations += 1
+        if iterations % 15 == 0 and sleeptime < 5:
+            sleeptime += 1
 
 
 def get_certificate(session):
