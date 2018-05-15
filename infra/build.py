@@ -110,7 +110,9 @@ def update_cloudformation(template='irdn-template.json'):
             cloudformation.update_stack(**stack_kwargs)
     except botocore.exceptions.ClientError as e:
         if e.args[0].endswith('does not exist'):
-            msg = 'Stack does not exist. Want to create it?'
+            msg = 'Stack %s does not exist. Want to create it?' % (
+                stack_name,
+            )
             if utils.confirm_or_exit(msg):
                 cloudformation.create_stack(**stack_kwargs)
         elif e.args[0].endswith('No updates are to be performed.'):
@@ -119,7 +121,7 @@ def update_cloudformation(template='irdn-template.json'):
         else:
             raise e
     utils.wait_for_stack_update_finish(cloudformation, stack_name)
-    if not certificate_id:
+    if not certificate:
         # Re-trigger cloudformation after lambda is finished
         return ['cloudformation']
 
@@ -132,6 +134,10 @@ ACTIONS = {
 }
 
 if __name__ == '__main__':
+    print('Running for stack %s with domain %s' % (
+        utils.get_stack_name(),
+        utils.get_domain()
+    ))
     parser = argparse.ArgumentParser()
     parser.add_argument("actions", nargs='+', choices=ACTIONS)
     args = parser.parse_args()
