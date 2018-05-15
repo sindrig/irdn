@@ -2,10 +2,6 @@
     "AWSTemplateFormatVersion": "2010-09-09",
     "Description": "Irdn.is helpers",
     "Parameters": {
-        "CodeBucketName": {
-            "Description": "S3 bucket that contains lambda code for ssl update",
-            "Type": "String"
-        },
         "Domain": {
             "Description": "Domain to host page on",
             "Type": "String",
@@ -92,12 +88,19 @@
                     ]
                 },
                 "Code": {
-                    "S3Bucket": {
-                        "Ref": "CodeBucketName"
-                    },
-                    "S3Key": "code.zip"
+                    "ZipFile": "print('Not configured')"
                 },
-                "Runtime": "python3.6"
+                "Runtime": "python3.6",
+                "Environment": {
+                    "Variables": {
+                        "STACK_NAME": {
+                            "Ref": "AWS::StackName"
+                        },
+                        "DOMAIN": {
+                            "Ref": "Domain"
+                        }
+                    }
+                }
             }
         },
         "CloudFront": {

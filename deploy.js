@@ -1,6 +1,6 @@
 const AWS = require('aws-sdk');
-const fs = require('fs');
 const childProcess = require('child_process');
+const branch = require('git-branch');
 
 const config = {
     region: 'eu-west-1',
@@ -17,22 +17,6 @@ if (process.env.LOCAL) {
 AWS.config.update(config);
 
 const CloudFormation = new AWS.CloudFormation();
-
-
-const getStackOutputs = StackName => new Promise((resolve, reject) => {
-    CloudFormation.describeStacks({ StackName }, (err, stacks) => {
-        if (err) {
-            return reject(err);
-        }
-        return stacks.Stacks.forEach((stack) => {
-            const result = {};
-            stack.Outputs.forEach((output) => {
-                result[output.OutputKey] = output.OutputValue;
-            });
-            resolve(result);
-        });
-    });
-});
 
 
 function runScript(script, args, callback) {
@@ -57,14 +41,14 @@ function runScript(script, args, callback) {
     });
 }
 
-const uploadFiles = ({ WebPageBucket, CloudFrontDistribution }) => {
+const uploadFiles = ({ outputs: { WebPageBucket, CloudFrontDistribution } }) => {
     if (!WebPageBucket) {
         console.error('WebPageBucket is undefined/null');
-        process.exit(1)
+        process.exit(1);
     }
     if (!CloudFrontDistribution) {
         console.error('WebPageBucket is undefined/null');
-        process.exit(1)
+        process.exit(1);
     }
     const args = [
         './build/**',
@@ -84,4 +68,30 @@ const uploadFiles = ({ WebPageBucket, CloudFrontDistribution }) => {
     });
 };
 
-fs.readFile('infra/STACK_NAME', 'utf8', (err, StackName) => getStackOutputs(StackName).then(uploadFiles));
+const getStack = () => branch().then((branchName) => {
+    let expectedStackName = 'irdn';
+    if (branchName !== 'master') {
+        expectedStackName = `${branchName}-${expectedStackName}`;
+    }
+    return new Promise((resolve, reject) => {
+        CloudFormation.describeStacks({}, (err, stacks) => {
+            if (err) {
+                return reject(err);
+            }
+            return stacks.Stacks.forEach((stack) => {
+                if (stack.StackName === expectedStackName) {
+                    const result = {
+                        name: stack.StackName,
+                        outputs: {},
+                    };
+                    stack.Outputs.forEach((output) => {
+                        result.outputs[output.OutputKey] = output.OutputValue;
+                    });
+                    resolve(result);
+                }
+            });
+        });
+    });
+});
+
+getStack().then(uploadFiles);

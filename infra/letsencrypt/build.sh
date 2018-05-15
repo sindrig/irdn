@@ -2,11 +2,10 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 (
     cd $DIR
-    cp ../STACK_NAME .
 
     rm -rf package
     mkdir package
-    cp *.py STACK_NAME package
+    cp *.py ../utils.py package
 
     virtualenv venv
     . venv/bin/activate

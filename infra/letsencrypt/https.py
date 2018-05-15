@@ -1,21 +1,26 @@
 import os
+import datetime
+import sys
 import tempfile
 import boto3
+import pytz
 
 from certbot.main import main as certbot_main  # noqa
 
-REGION = 'eu-west-1'
-PHONE_NUMBER = '+3548682226'
 session_kwargs = {}
 if os.getenv('LOCAL'):
     session_kwargs['profile_name'] = 'irdn'
+    sys.path.append('..')
 
+import utils  # noqa
+
+REGION = 'eu-west-1'
+PHONE_NUMBER = '+3548682226'
 session = boto3.Session(**session_kwargs)
 
 
 def get_stack_outputs():
-    with open(os.path.join(os.path.dirname(__file__), 'STACK_NAME')) as f:
-        stack_name = f.read()
+    stack_name = os.getenv('STACK_NAME') or utils.get_stack_name()
     client = session.client('cloudformation', region_name=REGION)
     stack = client.describe_stacks(StackName=stack_name)['Stacks'][0]
     return {
@@ -38,7 +43,16 @@ def notify(message):
     )
 
 
+def cert_needs_renewal():
+    certificate = utils.get_certificate(session)
+    now = datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
+    expiration = certificate['Expiration']
+    return (expiration - now).days < 30
+
+
 def main(renew):
+    if not cert_needs_renewal():
+        return 'No need to renew, bye'
     outputs = get_stack_outputs()
     workdir = tempfile.mkdtemp()
     output = os.path.join(workdir, 'output')
@@ -75,10 +89,15 @@ def main(renew):
 
     certbot_main(cli_args=sub_args)
     notify('Certbot lambda run. Check CloudWatch for logs.')
+    return 'Certificate updated'
 
 
 def handler(json_input, context):
-    main(renew=False)
+    response = main(renew=False)
+    print(response)
+    return {
+        'response': response,
+    }
 
 
 if __name__ == '__main__':

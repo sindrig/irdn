@@ -5,6 +5,7 @@
   "dependencies": {
     "aws-sdk": "^2.238.1",
     "babel-eslint": "^8.2.2",
+    "git-branch": "^2.0.1",
     "prop-types": "^15.6.1",
     "react": "^16.2.0",
     "react-bootstrap": "^0.32.1",

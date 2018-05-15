@@ -1,45 +1,25 @@
 import os
-import re
+import json
 import argparse
-import time
-import datetime
 import pprint
 
 import boto3
 import botocore
 
+import utils
+
 # We assume that we've already run make upload
 REGION = 'eu-west-1'
 DIR = os.path.dirname(os.path.abspath(__file__))
-with open(os.path.join(DIR, 'RESOURCE_BUCKET_NAME')) as f:
-    RESOURCE_BUCKET_NAME = f.read()
-CLOUDFORMATION_STACK_S3 = (
-    'https://s3.amazonaws.com/%s/irdn-template.json'
-) % (RESOURCE_BUCKET_NAME)
-with open(os.path.join(DIR, 'STACK_NAME')) as f:
-    CLOUDFORMATION_STACK_NAME = f.read()
-LAMBDA_CODE_S3 = (
-    RESOURCE_BUCKET_NAME, 'code.zip'
-)
 
 session = boto3.Session(profile_name='irdn')
-
-
-def _get_lambda_function_name():
-    cloudformation = session.client('cloudformation', region_name=REGION)
-    outputs = cloudformation.describe_stacks(
-        StackName=CLOUDFORMATION_STACK_NAME
-    )['Stacks'][0]['Outputs']
-    return [
-        output['OutputValue']
-        for output in outputs
-        if output['OutputKey'] == 'LambdaFunctionName'
-    ][0]
+cloudformation = session.client('cloudformation', region_name=REGION)
 
 
 def update_lambda():
     '''Updates lambda code with code from S3'''
-    lambda_function_name = _get_lambda_function_name()
+    outputs = utils.get_stack_outputs(cloudformation)
+    lambda_function_name = outputs['LambdaFunctionName']
     client = session.client('lambda', region_name=REGION)
     with open(os.path.join(DIR, 'letsencrypt', 'code.zip'), 'rb') as f:
         client.update_function_code(
@@ -50,48 +30,63 @@ def update_lambda():
 
 
 def trigger_lambda():
+    outputs = utils.get_stack_outputs(cloudformation)
     client = session.client('lambda', region_name=REGION)
-    lambda_function_name = _get_lambda_function_name()
+    lambda_function_name = outputs['LambdaFunctionName']
     response = client.invoke(
         FunctionName=lambda_function_name,
+        InvocationType='RequestResponse'
     )
     if response['StatusCode'] == 200:
         print('Lambda function triggered')
+        response = response['Payload'].read()
+        try:
+            response = json.loads(response)
+        except Exception:
+            print('Could not load json')
+        pprint.pprint(response)
     else:
         print('Error triggering lambda')
         pprint.pprint(response)
 
 
-def get_certificate_id(domain):
-    certificate_regex = re.compile('le-(.*)-\\d+')
-    client = session.client('iam')
-    certificates = client.list_server_certificates(
-        PathPrefix="/cloudfront/letsencrypt/"
-    )
-    for certificate in certificates['ServerCertificateMetadataList']:
-        cert_name = certificate['ServerCertificateName']
-        search = certificate_regex.search(cert_name)
-        if search and search.groups() and search.groups()[0] == domain:
-            return certificate['ServerCertificateId']
+def delete_stack():
+    stack_name = utils.get_stack_name()
+    stack = cloudformation.describe_stacks(StackName=stack_name)
+    status = stack['Stacks'][0]['StackStatus']
+    msg = (
+        'Are you sure you want to delete stack %s with status %s?'
+    ) % (stack_name, status)
+    if utils.confirm_or_exit(msg):
+        outputs = utils.get_stack_outputs(cloudformation)
+
+        s3_bucket = outputs['WebPageBucket']
+        s3 = session.resource('s3')
+        bucket = s3.Bucket(s3_bucket)
+        bucket.objects.all().delete()
+
+        cloudformation.delete_stack(StackName=stack_name)
+        try:
+            utils.wait_for_stack_update_finish(cloudformation, stack_name)
+        except botocore.exceptions.ClientError as e:
+            if e.args[0].endswith('does not exist'):
+                print('Stack %s deleted!' % (stack_name))
+            else:
+                raise e
 
 
 def update_cloudformation(template='irdn-template.json'):
     '''Updates cloudformation stack with definition in S3'''
-    domain = os.getenv('DOMAIN', 'irdn.is')
-    certificate_id = get_certificate_id(domain)
-    starttime = datetime.datetime.utcnow()
-    client = session.client('cloudformation', region_name=REGION)
+    domain = utils.get_domain()
+    stack_name = utils.get_stack_name()
+    certificate_id = utils.get_certificate(session)['ServerCertificateId']
     with open(os.path.join(DIR, template)) as f:
         template_body = f.read()
     stack_kwargs = dict(
-        StackName=CLOUDFORMATION_STACK_NAME,
+        StackName=stack_name,
         TemplateBody=template_body,
         Capabilities=['CAPABILITY_IAM'],
         Parameters=[
-            {
-                'ParameterKey': 'CodeBucketName',
-                'ParameterValue': RESOURCE_BUCKET_NAME
-            },
             {
                 'ParameterKey': 'Domain',
                 'ParameterValue': domain
@@ -103,57 +98,48 @@ def update_cloudformation(template='irdn-template.json'):
         ],
     )
     try:
-        stack = client.describe_stacks(StackName=CLOUDFORMATION_STACK_NAME)
+        stack = cloudformation.describe_stacks(StackName=stack_name)
         if stack['Stacks'][0]['StackStatus'] == 'ROLLBACK_COMPLETE':
-            client.delete_stack(StackName=CLOUDFORMATION_STACK_NAME)
-            client.create_stack(**stack_kwargs)
+            msg = (
+                'Stack is in ROLLBACK_COMPLETE. Want to delete and recreate?'
+            )
+            if utils.confirm_or_exit(msg):
+                cloudformation.delete_stack(StackName=stack_name)
+                cloudformation.create_stack(**stack_kwargs)
         else:
-            client.update_stack(**stack_kwargs)
+            cloudformation.update_stack(**stack_kwargs)
     except botocore.exceptions.ClientError as e:
         if e.args[0].endswith('does not exist'):
-            client.create_stack(**stack_kwargs)
+            msg = 'Stack does not exist. Want to create it?'
+            if utils.confirm_or_exit(msg):
+                cloudformation.create_stack(**stack_kwargs)
         elif e.args[0].endswith('No updates are to be performed.'):
             print('There are no updates to cloudformation stack, bailing out')
             return
         else:
             raise e
-    last_status = None
-    while True:
-        stacks = client.describe_stacks(
-            StackName=CLOUDFORMATION_STACK_NAME
-        )
-        status = stacks['Stacks'][0]['StackStatus']
-        if status != last_status:
-            print(status)
-        last_status = status
-        if status.endswith('COMPLETE') or status == 'ROLLBACK_FAILED':
-            if status not in ('CREATE_COMPLETE', 'UPDATE_COMPLETE'):
-                print('Something went wrong')
-                events = client.describe_stack_events(
-                    StackName=CLOUDFORMATION_STACK_NAME
-                )
-                for event in events['StackEvents']:
-                    if event['Timestamp'].replace(tzinfo=None) < starttime:
-                        break
-                    print(
-                        event['ResourceStatus'],
-                        event['ResourceType'],
-                        event['LogicalResourceId'],
-                        event.get('ResourceStatusReason', '')
-                    )
-            break
-        time.sleep(1)
+    utils.wait_for_stack_update_finish(cloudformation, stack_name)
+    if not certificate_id:
+        # Re-trigger cloudformation after lambda is finished
+        return ['cloudformation']
 
 
 ACTIONS = {
     'lambda': update_lambda,
     'cloudformation': update_cloudformation,
     'trigger': trigger_lambda,
+    'delete': delete_stack,
 }
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("actions", nargs='+', choices=ACTIONS)
     args = parser.parse_args()
-    for action in args.actions:
-        ACTIONS[action]()
+    actions = args.actions[:]
+    last_action = None
+    while actions:
+        action = actions.pop(0)
+        if action != last_action:
+            # Make sure we don't loop forever
+            last_action = action
+            actions += ACTIONS[action]() or []
