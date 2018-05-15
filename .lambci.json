@@ -1,4 +1,4 @@
 {
-  "cmd": "nave use 8 bash -c 'make should-deploy && make unpack-deps && make build && make deploy'",
+  "cmd": "nave use 8 bash -c 'make unpack-deps && make should-deploy && make build && make deploy'",
   "build": true
 }
