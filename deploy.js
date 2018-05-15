@@ -73,12 +73,14 @@ const getStack = () => branch().then((branchName) => {
     if (branchName !== 'master') {
         expectedStackName = `${branchName}-${expectedStackName}`;
     }
+    console.log('expectedStackName', expectedStackName);
     return new Promise((resolve, reject) => {
         CloudFormation.describeStacks({}, (err, stacks) => {
             if (err) {
                 return reject(err);
             }
             return stacks.Stacks.forEach((stack) => {
+                console.log('stack.StackName', stack.StackName);
                 if (stack.StackName === expectedStackName) {
                     const result = {
                         name: stack.StackName,
@@ -87,6 +89,7 @@ const getStack = () => branch().then((branchName) => {
                     stack.Outputs.forEach((output) => {
                         result.outputs[output.OutputKey] = output.OutputValue;
                     });
+                    console.log('resolved stack', result);
                     resolve(result);
                 }
             });
