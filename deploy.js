@@ -58,6 +58,14 @@ function runScript(script, args, callback) {
 }
 
 const uploadFiles = ({ WebPageBucket, CloudFrontDistribution }) => {
+    if (!WebPageBucket) {
+        console.error('WebPageBucket is undefined/null');
+        process.exit(1)
+    }
+    if (!CloudFrontDistribution) {
+        console.error('WebPageBucket is undefined/null');
+        process.exit(1)
+    }
     const args = [
         './build/**',
         '--cwd', './build/',

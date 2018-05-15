@@ -78,7 +78,7 @@ def main(renew):
 
 
 def handler(json_input, context):
-    main(renew=True)
+    main(renew=False)
 
 
 if __name__ == '__main__':

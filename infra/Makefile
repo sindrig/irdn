@@ -11,3 +11,5 @@ prepare:
 
 update: prepare
 	python build.py cloudformation lambda # trigger
+
+all: clean build update

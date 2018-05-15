@@ -15,14 +15,21 @@
             "Description": "SSLCertificate to use. If not specified, defaults to default cloudformation certificate.",
             "Type": "String",
             "Default": ""
-        },
+        }
     },
     "Conditions": {
-        "SSLCertificateEmpty": {"Fn::Equals": [{"Ref": "CertificateId"}, ""]}
+        "SSLCertificateEmpty": {
+            "Fn::Equals": [
+                {
+                    "Ref": "CertificateId"
+                },
+                ""
+            ]
+        }
     },
     "Resources": {
-        "WebPageBucket" : {
-            "Type" : "AWS::S3::Bucket",
+        "WebPageBucket": {
+            "Type": "AWS::S3::Bucket",
             "Properties": {
                 "WebsiteConfiguration": {
                     "ErrorDocument": "index.html",
@@ -30,10 +37,51 @@
                 }
             }
         },
+        "PublicReadPlicy": {
+            "Type": "AWS::S3::BucketPolicy",
+            "Properties": {
+                "Bucket": {
+                    "Ref": "WebPageBucket"
+                },
+                "PolicyDocument": {
+                    "Statement": [
+                        {
+                            "Action": [
+                                "s3:GetObject"
+                            ],
+                            "Effect": "Allow",
+                            "Resource": {
+                                "Fn::Join": [
+                                    "",
+                                    [
+                                        "arn:aws:s3:::",
+                                        {
+                                            "Ref": "WebPageBucket"
+                                        },
+                                        "/*"
+                                    ]
+                                ]
+                            },
+                            "Principal": "*"
+                        }
+                    ]
+                }
+            }
+        },
         "SSLUpdater": {
             "Type": "AWS::Lambda::Function",
             "Properties": {
-                "Description": {"Fn::Join": [" ", ["Update ssl certificate for", {"Ref": "Domain"}]]},
+                "Description": {
+                    "Fn::Join": [
+                        " ",
+                        [
+                            "Update ssl certificate for",
+                            {
+                                "Ref": "Domain"
+                            }
+                        ]
+                    ]
+                },
                 "Handler": "https.handler",
                 "MemorySize": "512",
                 "Timeout": "300",
@@ -57,12 +105,40 @@
             "Properties": {
                 "DistributionConfig": {
                     "Aliases": [
-                        {"Ref": "Domain"}
+                        {
+                            "Ref": "Domain"
+                        }
                     ],
                     "ViewerCertificate": {
-                        "CloudFrontDefaultCertificate": {"Fn::If": ["SSLCertificateEmpty", true, {"Ref" : "AWS::NoValue"}]},
-                        "IamCertificateId": {"Fn::If": ["SSLCertificateEmpty", {"Ref" : "AWS::NoValue"}, {"Ref": "CertificateId"}]},
-                        "SslSupportMethod": {"Fn::If": ["SSLCertificateEmpty", {"Ref" : "AWS::NoValue"}, "sni-only"]},
+                        "CloudFrontDefaultCertificate": {
+                            "Fn::If": [
+                                "SSLCertificateEmpty",
+                                true,
+                                {
+                                    "Ref": "AWS::NoValue"
+                                }
+                            ]
+                        },
+                        "IamCertificateId": {
+                            "Fn::If": [
+                                "SSLCertificateEmpty",
+                                {
+                                    "Ref": "AWS::NoValue"
+                                },
+                                {
+                                    "Ref": "CertificateId"
+                                }
+                            ]
+                        },
+                        "SslSupportMethod": {
+                            "Fn::If": [
+                                "SSLCertificateEmpty",
+                                {
+                                    "Ref": "AWS::NoValue"
+                                },
+                                "sni-only"
+                            ]
+                        }
                     },
                     "DefaultCacheBehavior": {
                         "AllowedMethods": [
@@ -80,8 +156,25 @@
                         },
                         "MaxTTL": 0,
                         "MinTTL": 0,
-                        "TargetOriginId": {"Fn::Join": ["-", [{"Ref": "Domain"}, "cf", "-origin"]]},
-                        "ViewerProtocolPolicy": "redirect-to-https"
+                        "TargetOriginId": {
+                            "Fn::Join": [
+                                "-",
+                                [
+                                    {
+                                        "Ref": "Domain"
+                                    },
+                                    "cf",
+                                    "-origin"
+                                ]
+                            ]
+                        },
+                        "ViewerProtocolPolicy": {
+                            "Fn::If": [
+                                "SSLCertificateEmpty",
+                                "allow-all",
+                                "redirect-to-https"
+                            ]
+                        }
                     },
                     "Enabled": true,
                     "Origins": [
@@ -90,12 +183,25 @@
                                 "Fn::Join": [
                                     ".",
                                     [
-                                        { "Ref": "WebPageBucket" },
+                                        {
+                                            "Ref": "WebPageBucket"
+                                        },
                                         "s3-website-eu-west-1.amazonaws.com"
                                     ]
                                 ]
                             },
-                            "Id": {"Fn::Join": ["-", [{"Ref": "Domain"}, "cf", "-origin"]]},
+                            "Id": {
+                                "Fn::Join": [
+                                    "-",
+                                    [
+                                        {
+                                            "Ref": "Domain"
+                                        },
+                                        "cf",
+                                        "-origin"
+                                    ]
+                                ]
+                            },
                             "CustomOriginConfig": {
                                 "OriginProtocolPolicy": "http-only"
                             }
@@ -109,7 +215,9 @@
             "Properties": {
                 "HostedZoneName": "irdn.is.",
                 "Comment": "Alias for s3 website",
-                "Name": {"Ref": "Domain"},
+                "Name": {
+                    "Ref": "Domain"
+                },
                 "Type": "A",
                 "AliasTarget": {
                     "DNSName": {
@@ -166,10 +274,14 @@
                                         "Fn::Join": [
                                             "/",
                                             [
-                                                {"Fn::GetAtt": ["WebPageBucket", "Arn"]},
+                                                {
+                                                    "Fn::GetAtt": [
+                                                        "WebPageBucket",
+                                                        "Arn"
+                                                    ]
+                                                },
                                                 "*"
                                             ]
-
                                         ]
                                     }
                                 ]
@@ -189,11 +301,15 @@
                                         "Fn::Join": [
                                             "/",
                                             [
-                                                {"Fn::GetAtt": ["WebPageBucket", "Arn"]},
+                                                {
+                                                    "Fn::GetAtt": [
+                                                        "WebPageBucket",
+                                                        "Arn"
+                                                    ]
+                                                },
                                                 ".well-known",
                                                 "*"
                                             ]
-
                                         ]
                                     }
                                 ]
@@ -264,19 +380,27 @@
     "Outputs": {
         "LambdaFunctionName": {
             "Description": "Name of the lambda function to update ssl",
-            "Value": {"Ref": "SSLUpdater"}
+            "Value": {
+                "Ref": "SSLUpdater"
+            }
         },
         "WebPageBucket": {
             "Description": "Bucket to store webpage",
-            "Value": {"Ref": "WebPageBucket"}
+            "Value": {
+                "Ref": "WebPageBucket"
+            }
         },
         "CloudFrontDistribution": {
             "Description": "Id of the CloudFront distribution",
-            "Value": {"Ref": "CloudFront"}
+            "Value": {
+                "Ref": "CloudFront"
+            }
         },
         "Domain": {
             "Description": "Domain of the webpage",
-            "Value": {"Ref": "Domain"}
+            "Value": {
+                "Ref": "Domain"
+            }
         }
     }
 }
