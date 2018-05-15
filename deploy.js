@@ -80,11 +80,12 @@ const getStack = () => branch().then((branchName) => {
     }
     console.log('expectedStackName', expectedStackName);
     return new Promise((resolve, reject) => {
+        let resolved = false;
         CloudFormation.describeStacks({}, (err, stacks) => {
             if (err) {
                 return reject(err);
             }
-            return stacks.Stacks.forEach((stack) => {
+            stacks.Stacks.forEach((stack) => {
                 console.log('stack.StackName', stack.StackName);
                 if (stack.StackName === expectedStackName) {
                     const result = {
@@ -95,11 +96,23 @@ const getStack = () => branch().then((branchName) => {
                         result.outputs[output.OutputKey] = output.OutputValue;
                     });
                     console.log('resolved stack', result);
+                    resolved = true;
                     resolve(result);
                 }
             });
         });
+        if (!resolved) {
+            reject(new Error('Stack not found'));
+        }
     });
 });
 
-getStack().then(uploadFiles);
+const args = process.argv.slice(2);
+if (args.indexOf('--check') >= 0) {
+    getStack().catch(() => {
+        console.log('Stack not found, bailing out');
+        process.exit(1)
+    });
+} else {
+    getStack().then(uploadFiles);
+}

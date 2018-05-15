@@ -18,3 +18,6 @@ update-deps:
 
 unpack-deps:
 	tar zxf node_modules.tar.gz
+
+should-deploy:
+	npm run should-deploy
