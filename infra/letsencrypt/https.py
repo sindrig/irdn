@@ -64,6 +64,8 @@ def main(renew):
     os.environ['AWS_ACCESS_KEY_ID'] = credentials.access_key
     os.environ['AWS_SECRET_ACCESS_KEY'] = credentials.secret_key
 
+    domain = outputs['Domain']
+
     try:
         os.makedirs(output)
     except OSError:
@@ -80,7 +82,7 @@ def main(renew):
         '--config-dir', output,
         '--work-dir', workdir,
         '--logs-dir', output,
-        '-d', outputs.get('Domain', 'irdn.is'),
+        '-d', domain,
         '-m', 'sindrigudmundsson@gmail.com',
         '-n'
     ]
@@ -90,7 +92,9 @@ def main(renew):
     # sub_args += ['--staging']
 
     certbot_main(cli_args=sub_args)
-    notify('Certbot lambda run. Check CloudWatch for logs.')
+    notify(
+        'Certbot lambda run for %s. Check CloudWatch for logs.' % (domain, )
+    )
     return 'Certificate updated'
 
 
