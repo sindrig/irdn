@@ -45,6 +45,8 @@ def notify(message):
 
 def cert_needs_renewal():
     certificate = utils.get_certificate(session)
+    if not certificate:
+        return True
     now = datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
     expiration = certificate['Expiration']
     return (expiration - now).days < 30
