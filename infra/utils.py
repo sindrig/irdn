@@ -17,6 +17,8 @@ def get_stack_outputs(client):
 
 
 def get_branch():
+    if os.getenv('BRANCH_OVERRIDE'):
+        return os.getenv('BRANCH_OVERRIDE')
     args = [
         'git',
         'rev-parse',
