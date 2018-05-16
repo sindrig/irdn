@@ -1,4 +1,5 @@
 import os
+import subprocess
 import json
 import argparse
 import pprint
@@ -77,6 +78,7 @@ def delete_stack():
 
 def update_cloudformation(template='irdn-template.json'):
     '''Updates cloudformation stack with definition in S3'''
+    created = False
     domain = utils.get_domain()
     stack_name = utils.get_stack_name()
     certificate = utils.get_certificate(session) or {}
@@ -106,6 +108,7 @@ def update_cloudformation(template='irdn-template.json'):
             if utils.confirm_or_exit(msg):
                 cloudformation.delete_stack(StackName=stack_name)
                 cloudformation.create_stack(**stack_kwargs)
+                created = True
         else:
             cloudformation.update_stack(**stack_kwargs)
     except botocore.exceptions.ClientError as e:
@@ -115,15 +118,41 @@ def update_cloudformation(template='irdn-template.json'):
             )
             if utils.confirm_or_exit(msg):
                 cloudformation.create_stack(**stack_kwargs)
+                created = True
         elif e.args[0].endswith('No updates are to be performed.'):
             print('There are no updates to cloudformation stack, bailing out')
             return
         else:
             raise e
     utils.wait_for_stack_update_finish(cloudformation, stack_name)
+    post_functions = []
     if not certificate:
         # Re-trigger cloudformation after lambda is finished
-        return ['cloudformation']
+        post_functions.append('cloudformation')
+    if created:
+        post_functions.append('deploy')
+    return post_functions
+
+
+def deploy_main_page():
+    print(os.path.dirname(DIR))
+    to_run = 'clean', 'build', 'deploy'
+    for make_command in to_run:
+        p = subprocess.Popen(
+            ['make %s' % make_command],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=True,
+            cwd=os.path.dirname(DIR),
+            env=dict(
+                **os.environ,
+                LOCAL='true'
+            )
+        )
+        out, err = p.communicate()
+        if err:
+            raise RuntimeError(err)
+        print(out.decode('utf8'))
 
 
 ACTIONS = {
@@ -131,6 +160,7 @@ ACTIONS = {
     'cloudformation': update_cloudformation,
     'trigger': trigger_lambda,
     'delete': delete_stack,
+    'deploy': deploy_main_page,
 }
 
 if __name__ == '__main__':
