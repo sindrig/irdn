@@ -21,3 +21,7 @@ unpack-deps:
 
 should-deploy:
 	npm run should-deploy
+
+trigger-build:
+	git commit --allow-empty -m 'Trigger LambCI'
+	git push -u origin $$(git rev-parse --abbrev-ref HEAD)

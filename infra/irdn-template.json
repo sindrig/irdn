@@ -354,10 +354,13 @@
                             "Statement": {
                                 "Effect": "Allow",
                                 "Action": [
-                                    "logs:*"
+                                    "logs:CreateLogGroup",
+                                    "logs:CreateLogStream",
+                                    "logs:PutLogEvents",
+                                    "logs:DescribeLogStreams"
                                 ],
                                 "Resource": [
-                                    "arn:aws:logs:::*"
+                                    "arn:aws:logs:*:*:*"
                                 ]
                             }
                         }
