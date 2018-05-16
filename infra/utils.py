@@ -65,7 +65,11 @@ def wait_for_stack_update_finish(cloudformation, stack_name):
         if status != last_status:
             print(status)
         last_status = status
-        if status.endswith('COMPLETE') or status == 'ROLLBACK_FAILED':
+        if (
+            status.endswith('COMPLETE') or
+            status == 'ROLLBACK_FAILED' or
+            status == 'DELETE_FAILED'
+        ):
             if status not in ('CREATE_COMPLETE', 'UPDATE_COMPLETE'):
                 print('Something went wrong')
                 events = cloudformation.describe_stack_events(
