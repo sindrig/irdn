@@ -74,10 +74,7 @@ const getStack = () => branch().then((branchName) => {
         console.log('Trying to use LAMBCI_BRANCH env variable for branch');
         branchNameToUse = process.env.LAMBCI_BRANCH;
     }
-    let expectedStackName = 'irdn';
-    if (branchNameToUse !== 'master') {
-        expectedStackName = `${branchNameToUse}-${expectedStackName}`;
-    }
+    const expectedStackName = `${branchNameToUse}-irdn`;
     console.log('expectedStackName', expectedStackName);
     return new Promise((resolve, reject) => {
         CloudFormation.describeStacks({}, (err, stacks) => {
