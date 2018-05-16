@@ -43,6 +43,8 @@ def get_domain():
         return os.getenv('DOMAIN')
     suffix = 'irdn.is'
     branch = get_branch()
+    if branch == 'master':
+        return suffix
     return '%s.%s' % (branch, suffix)
 
 
