@@ -381,7 +381,45 @@
                     }
                 ]
             }
-        }
+        },
+        "SSLCron": {
+            "Type": "AWS::Events::Rule",
+            "Properties": {
+                "Description": "Schedules running of ssl renew",
+                "Name": {"Fn::Join": ["-", [{"Ref": "AWS::StackName"}, "SSLCron"]]},
+                "ScheduleExpression": "rate(5 days)",
+                "Targets": [
+                    {
+                        "Id": "CronScheduler",
+                        "Arn": {
+                            "Fn::GetAtt": [
+                                "SSLUpdater",
+                                "Arn"
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "InvokeLambdaPermission": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+                "FunctionName": {
+                    "Fn::GetAtt": [
+                        "SSLUpdater",
+                        "Arn"
+                    ]
+                },
+                "Action": "lambda:InvokeFunction",
+                "Principal": "events.amazonaws.com",
+                "SourceArn": {
+                    "Fn::GetAtt": [
+                        "SSLCron",
+                        "Arn"
+                    ]
+                }
+            }
+        },
     },
     "Outputs": {
         "LambdaFunctionName": {

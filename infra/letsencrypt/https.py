@@ -49,6 +49,7 @@ def cert_needs_renewal():
         return True
     now = datetime.datetime.utcnow().replace(tzinfo=pytz.utc)
     expiration = certificate['Expiration']
+    print('Certificate expires on %s' % (expiration, ))
     return (expiration - now).days < 30
 
 
