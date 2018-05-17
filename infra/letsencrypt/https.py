@@ -1,3 +1,4 @@
+import argparse
 import os
 import datetime
 import sys
@@ -53,8 +54,9 @@ def cert_needs_renewal():
     return (expiration - now).days < 30
 
 
-def main(renew):
-    if not cert_needs_renewal():
+def main(renew, force):
+    print('Running main with renew %s and force %s' % (renew, force, ))
+    if not force and not cert_needs_renewal():
         return 'No need to renew, bye'
     outputs = get_stack_outputs()
     workdir = tempfile.mkdtemp()
@@ -100,7 +102,10 @@ def main(renew):
 
 
 def handler(json_input, context):
-    response = main(renew=False)
+    response = main(
+        renew=json_input.get('renew', False),
+        force=json_input.get('force', False),
+    )
     print(response)
     return {
         'response': response,
@@ -108,8 +113,12 @@ def handler(json_input, context):
 
 
 if __name__ == '__main__':
-    handler(None, None)
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument('--renew', action='store_true', default=False)
-    # args = parser.parse_args()
-    # main(args.renew)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--renew', action='store_true', default=False)
+    parser.add_argument('--force', action='store_true', default=False)
+    args = parser.parse_args()
+    json_input = {
+        'renew': args.renew,
+        'force': args.force,
+    }
+    handler(json_input, None)

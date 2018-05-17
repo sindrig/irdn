@@ -75,6 +75,9 @@ def delete_stack():
             else:
                 raise e
 
+        if input('Also delete the SSL certificate?').lower() == 'y':
+            return ['delete_cert']
+
 
 def update_cloudformation(template='irdn-template.json'):
     '''Updates cloudformation stack with definition in S3'''
@@ -155,12 +158,21 @@ def deploy_main_page():
         print(out.decode('utf8'))
 
 
+def delete_cert():
+    certificate = utils.get_certificate(session)
+    if not certificate:
+        print('Certificate not found')
+    utils.delete_certificate(session, certificate)
+    print('Certificate %s deleted' % (certificate, ))
+
+
 ACTIONS = {
     'lambda': update_lambda,
     'cloudformation': update_cloudformation,
     'trigger': trigger_lambda,
     'delete': delete_stack,
     'deploy': deploy_main_page,
+    'delete_cert': delete_cert,
 }
 
 if __name__ == '__main__':

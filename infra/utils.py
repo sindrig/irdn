@@ -105,3 +105,10 @@ def get_certificate(session):
         search = certificate_regex.search(cert_name)
         if search and search.groups() and search.groups()[0] == domain:
             return certificate
+
+
+def delete_certificate(session, certificate):
+    client = session.client('iam')
+    client.delete_server_certificate(
+        ServerCertificateName=certificate['ServerCertificateName']
+    )
