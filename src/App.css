@@ -30,3 +30,5 @@
 .cv-grid img { max-width: 100%; height: auto; max-height: 100px}
 
 img.company-image { padding-top: 30px; }
+
+.cv-grid object { width: 100%; }

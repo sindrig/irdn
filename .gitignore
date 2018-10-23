@@ -23,6 +23,6 @@ yarn-error.log*
 *.swp
 __pycache__/
 
-src/cv/cv.aux
-src/cv/cv.out
-src/cv/cv.log
+public/cv.aux
+public/cv.out
+public/cv.log

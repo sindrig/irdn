@@ -1,5 +1,6 @@
 build:
 	npm run build
+	rm -f build/cv.log build/cv.out build/cv.aux
 
 deploy:
 	npm run deploy
@@ -28,4 +29,4 @@ trigger-build:
 
 cv:
 	# Set SOURCE_DATE_EPOCH to get reproducable builds
-	cd src/cv && SOURCE_DATE_EPOCH=1540290777 xelatex cv.tex
+	cd src/cv && SOURCE_DATE_EPOCH=1540290777 xelatex -output-directory=../../public cv.tex
