@@ -15,7 +15,7 @@ if os.getenv('LOCAL'):
 
 import utils  # noqa
 
-REGION = 'eu-west-1'
+REGION = os.getenv('REGION', 'eu-west-1')
 PHONE_NUMBER = '+3548682226'
 session = boto3.Session(**session_kwargs)
 

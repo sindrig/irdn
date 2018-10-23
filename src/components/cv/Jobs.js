@@ -80,7 +80,7 @@ const Trackwell = () => (
 );
 
 const HI = () => (
-    <Job company="University of Iceland" fromDate="Jan 2012" toDate="May 2016" image={hiImage} companyLink="https://www.hi.is">
+    <Job company="University of Iceland" fromDate="Jan 2012" toDate="May 2012" image={hiImage} companyLink="https://www.hi.is">
         <p>
             Software development (Þróun hugbúnaðar) assistant teacher spring 2012
         </p>

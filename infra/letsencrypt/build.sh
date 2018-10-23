@@ -7,7 +7,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
     mkdir package
     cp *.py ../utils.py package
 
-    virtualenv venv
+    # virtualenv venv
     . venv/bin/activate
 
     TMP_DIR=$(mktemp -d)
