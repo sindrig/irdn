@@ -2,7 +2,6 @@ import React from 'react';
 import { Grid, Row, Col } from 'react-bootstrap';
 import { SocialIcon } from 'react-social-icons';
 import sindri from '../images/sindri.jpg';
-import awsCertified from '../images/aws_certified.png';
 
 
 const socialUrls = [
@@ -26,11 +25,6 @@ export default () => (
                 </p>
                 <p>
                     I mostly do python.
-                </p>
-                <p>
-                    <a href="https://www.certmetrics.com/amazon/public/badge.aspx?i=2&t=c&d=2018-04-18&ci=AWS00456254">
-                        <img src={awsCertified} alt="AWS Certified Developer" />
-                    </a>
                 </p>
                 {socialUrls.map(s => <SocialIcon url={s} color="black" key={s} />)}
             </Col>
