@@ -27,4 +27,5 @@ trigger-build:
 	git push -u origin $$(git rev-parse --abbrev-ref HEAD)
 
 cv:
-	cd src/cv && xelatex cv.tex
+	# Set SOURCE_DATE_EPOCH to get reproducable builds
+	cd src/cv && SOURCE_DATE_EPOCH=1540290777 xelatex cv.tex
