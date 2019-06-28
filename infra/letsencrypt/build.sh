@@ -17,7 +17,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
         python setup.py install
     )
 
-    cp -r venv/lib/python3.6/site-packages/. package
+    cp -r venv/lib/python3.7/site-packages/. package
 
     cd package
     zip -qyr ../code.zip . -x@../.lambdaignore

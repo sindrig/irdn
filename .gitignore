@@ -26,3 +26,5 @@ __pycache__/
 public/cv.aux
 public/cv.out
 public/cv.log
+
+/infra/letsencrypt/.envrc
