@@ -28,5 +28,5 @@ trigger-build:
 	git push -u origin $$(git rev-parse --abbrev-ref HEAD)
 
 cv:
-	# Set SOURCE_DATE_EPOCH to get reproducable builds
-	cd src/cv && SOURCE_DATE_EPOCH=1540290777 xelatex -output-directory=../../public cv.tex
+	docker run --rm -v `pwd`/src/cv:/data -v `pwd`/src/images:/images moss/xelatex make
+	mv -f src/cv/cv.pdf public

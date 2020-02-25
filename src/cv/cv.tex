@@ -7,8 +7,7 @@
 \usepackage{xunicode,xltxtra,url,parskip} 	%other packages for formatting
 \RequirePackage{color,graphicx}
 \usepackage[usenames,dvipsnames]{xcolor}
-\usepackage[big]{layaureo} 				%better formatting of the A4 page
-% an alternative to Layaureo can be ** \usepackage{fullpage} **
+\usepackage{fullpage}
 \usepackage{supertabular} 				%for Grades
 \usepackage{titlesec}					%custom \section
 \usepackage{wasysym}
@@ -71,10 +70,10 @@
 \begin{tabular}{rlr}
     \textsc{Place and Date of Birth:} & Iceland | 25 September 1988
     &\multirow{9}{*}{\includegraphics[scale=0.18]{sindri}}\\
-    \textsc{Address:}   & Hörðaland 4, Reykjavík, Iceland \\
-    \textsc{Phone:}     & +354 868 2226\\
+    \textsc{Location:}   & Reykjavík, Iceland \\
     \textsc{email:}     & \href{mailto:sindrigudmundsson@gmail.com}{sindrigudmundsson@gmail.com}\\
     \textsc{homepage:}     & \href{https://irdn.is}{irdn.is} \\
+    \textsc{github:}     & \href{https://github.com/sindrig}{/sindrig} \\
     \multicolumn{3}{c}{} \\
     \multicolumn{3}{c}{} \\
     \multicolumn{3}{c}{} \\
@@ -85,9 +84,9 @@
 %Section: Work Experience at the top
 \section{Work Experience}
 \begin{tabular}{r|p{10cm}}
- \emph{Current} & Software developer at \href{www.tempo.io}{Tempo}, Reykjavík \\\textsc{Jan 2016}&\footnotesize{Worked on everything from writing front-end in React.js to back-end in python/java to ops/dev-ops using kubernetes on AWS.}\\\multicolumn{2}{c}{} \\
+ \emph{Current} & Software developer at \href{www.tempo.io}{Tempo}, Reykjavík \\\textsc{Jan 2016}&\footnotesize{Mostly platform/dev-ops but worked on everything from writing front-end in React.js to back-end in python/java to ops/dev-ops mostly with python+aws.}\\\multicolumn{2}{c}{} \\
 
- \emph{Current} & Developer and system architect at \href{www.hreyfistjornun.is}{Hreyfistjórnun}, Reykjavík \\\textsc{Nov 2010}&\footnotesize{Wrote a web application using Ruby on Rails for physiotherapists and patients to communicate and record physical exercise. Rewrote the
+ \textsc{Nov 2010-Apr 2020} & Developer at \href{www.hreyfistjornun.is}{Hreyfistjórnun}, Reykjavík \\&\footnotesize{Wrote a web application using Ruby on Rails for physiotherapists and patients to communicate and record physical exercise. Rewrote the
 system in 2013 using Python/Django.}\\
 & \footnotesize{Also wrote a VOIP client using Asterisk and Python.}\\
 & \footnotesize{Played a role in the introduction of physical exercise
@@ -121,11 +120,9 @@ prescriptions by the government.}\\\multicolumn{2}{c}{} \\
 \section{Social Activities}
 \begin{tabular}{r|p{10cm}}
 
- \emph{Current} & Board member at \href{www.vikingur.is}{Víkingur FC} (football dept.), Reykjavík \\\textsc{Jan 2018}&\\\multicolumn{2}{c}{} \\
+ \textsc{Jan 2018-Feb 2019} & Board member at \href{www.vikingur.is}{Víkingur FC} (football dept.), Reykjavík \\\multicolumn{2}{c}{} \\
 
  \textsc{June 2011-Jan 2018} & Board member at Berserkir FC, Reykjavík \\\multicolumn{2}{c}{} \\
-
- \textsc{Nov 2011-Nov 2014} & Employee activity committee at Trackwell, Reykjavík \\\multicolumn{2}{c}{} \\
 
 \end{tabular}
 %Section: Languages
@@ -145,7 +142,7 @@ Football (soccer), Camping, Hiking, Hunting, Skiing
 \begin{tabular}{lll}
     \begin{tabular}{@{}l@{}}
         Björn Orri Guðmundsson\\
-        Team Lead\\
+        Lead Architect\\
         Tempo ehf.\\
         Borgartún 37\\
         105 Reykjavík, Iceland\\

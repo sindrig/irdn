@@ -23,8 +23,9 @@ yarn-error.log*
 *.swp
 __pycache__/
 
-public/cv.aux
-public/cv.out
-public/cv.log
+src/cv/cv.aux
+src/cv/cv.out
+src/cv/cv.log
 
 /infra/letsencrypt/.envrc
+/infra/venv
