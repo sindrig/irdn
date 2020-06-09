@@ -7,7 +7,6 @@ import sindri from '../images/sindri.jpg';
 const socialUrls = [
     'https://github.com/sindrig',
     'https://www.linkedin.com/in/sindrig/',
-    'https://www.facebook.com/sindri',
     'https://twitter.com/sindrig88',
 ];
 
@@ -22,9 +21,6 @@ export default () => (
                 <h1>About me</h1>
                 <p>
                     I'm a developer, currently employed at <a href="https://tempo.io">Tempo</a> in Iceland.
-                </p>
-                <p>
-                    I mostly do python.
                 </p>
                 {socialUrls.map(s => <SocialIcon url={s} color="black" key={s} />)}
             </Col>

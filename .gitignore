@@ -29,3 +29,4 @@ src/cv/cv.log
 
 /infra/letsencrypt/.envrc
 /infra/venv
+.envrc
