@@ -8,7 +8,7 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  prepare:
+  build:
     runs-on: ubuntu-20.04
     timeout-minutes: 5 #pulling dependencies potentially twice - host OS and docker layer
     steps:
@@ -20,7 +20,7 @@ jobs:
         id: cache-deps
         uses: actions/cache@v2
         with:
-          path: cache
+          path: '**/node_modules'
           key: node-modules-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
 
       - run: yarn install --frozen-lockfile
