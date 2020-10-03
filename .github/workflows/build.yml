@@ -1,4 +1,4 @@
-name: Build and deploy
+name: Build
 
 on:
   push:
@@ -38,7 +38,7 @@ jobs:
       - run: make cv
       - name: Check deploy
         run: |
-          STACK=$(aws cloudformation describe-stacks --stack-name=master-irdn)
+          STACK=$(aws cloudformation describe-stacks --stack-name=$(git branch --show-current)-irdn | jq -cM)
           echo "::set-env name=STACK::$STACK"
         continue-on-error: true
       - name: Deploy
