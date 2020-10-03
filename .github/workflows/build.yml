@@ -1,0 +1,50 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - 'master'
+  pull_request: {}
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 5 #pulling dependencies potentially twice - host OS and docker layer
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+
+      - name: Cache for node_modules
+        id: cache-deps
+        uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: node-modules-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+
+      - run: yarn install --frozen-lockfile
+        if: steps.cache-deps.outputs.cache-hit != 'true'
+      - run: yarn build
+      - run: make cv
+        if: github.ref == 'refs/heads/master'
+      - name: Check deploy
+        run: |
+          GIT_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF/refs\/heads\//}}"
+          STACK=$(aws cloudformation describe-stacks --stack-name=$GIT_BRANCH-irdn | jq -cM)
+          echo "::set-env name=STACK::$STACK"
+        continue-on-error: true
+      - name: Deploy
+        if: ${{ env.STACK != ''}}
+        run: |
+          STACK_OUTPUTS=$(echo $STACK | jq '.Stacks[0].Outputs')
+          BUCKET=$(echo "$STACK_OUTPUTS" | jq '.[] | select(.OutputKey == "WebPageBucket") | .OutputValue')
+          CF_DISTRIBUTION_ID=$(echo "$STACK_OUTPUTS" | jq '.[] | select(.OutputKey == "CloudFrontDistribution") | .OutputValue')
+          aws s3 sync build/ s3://$BUCKET
+          aws cloudfront create-invalidation --distribution-id $CF_DISTRIBUTION_ID --paths /index.html /home /about /cv /
