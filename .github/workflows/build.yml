@@ -33,6 +33,7 @@ jobs:
         if: steps.cache-deps.outputs.cache-hit != 'true'
       - run: yarn build
       - run: make cv
+        if: github.ref == 'refs/heads/master'
       - name: Check deploy
         run: |
           GIT_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF/refs\/heads\//}}"
