@@ -44,7 +44,7 @@ jobs:
         if: ${{ env.STACK != ''}}
         run: |
           STACK_OUTPUTS=$(echo $STACK | jq '.Stacks[0].Outputs')
-          BUCKET=$(echo "$STACK_OUTPUTS" | jq '.[] | select(.OutputKey == "WebPageBucket") | .OutputValue')
-          CF_DISTRIBUTION_ID=$(echo "$STACK_OUTPUTS" | jq '.[] | select(.OutputKey == "CloudFrontDistribution") | .OutputValue')
+          BUCKET=$(echo "$STACK_OUTPUTS" | jq '.[] | select(.OutputKey == "WebPageBucket") | .OutputValue' -r)
+          CF_DISTRIBUTION_ID=$(echo "$STACK_OUTPUTS" | jq '.[] | select(.OutputKey == "CloudFrontDistribution") | .OutputValue' -r)
           aws s3 sync build/ s3://$BUCKET
           aws cloudfront create-invalidation --distribution-id $CF_DISTRIBUTION_ID --paths /index.html /home /about /cv /
