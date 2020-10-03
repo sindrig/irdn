@@ -1,4 +1,0 @@
-{
-  "cmd": "nave use 8 bash -c './deploy.sh'",
-  "build": true
-}
