@@ -26,4 +26,7 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn build
       - run: make cv
+      - uses: satackey/action-docker-layer-caching@v0.0.8
+        # Ignore the failure of a step and avoid terminating the job.
+        continue-on-error: true
       - run: yarn deploy

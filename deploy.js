@@ -69,12 +69,7 @@ const uploadFiles = ({ outputs: { WebPageBucket, CloudFrontDistribution } }) => 
 };
 
 const getStack = () => branch().then((branchName) => {
-    let branchNameToUse = branchName;
-    if (!branchName) {
-        console.log('Trying to use LAMBCI_BRANCH env variable for branch');
-        branchNameToUse = process.env.LAMBCI_BRANCH;
-    }
-    const expectedStackName = `${branchNameToUse}-irdn`;
+    const expectedStackName = `${branchName}-irdn`;
     console.log('expectedStackName', expectedStackName);
     return new Promise((resolve, reject) => {
         CloudFormation.describeStacks({}, (err, stacks) => {
@@ -105,12 +100,16 @@ const getStack = () => branch().then((branchName) => {
 });
 
 const args = process.argv.slice(2);
-if (args.indexOf('--check') >= 0) {
-    getStack().catch((err) => {
-        console.log('Stack not found, bailing out');
-        console.log(err);
-        process.exit(1);
+const stack = getStack().catch((err) => {
+    console.log('Stack not found, bailing out');
+    console.log(err.message);
+    process.exit(1);
+});
+
+if (args.indexOf('--check') === -1) {
+    stack.then(uploadFiles).catch((err) => {
+        console.error('Error deploying')
+        console.error(err.message)
+        process.exit(1)
     });
-} else {
-    getStack().then(uploadFiles);
 }
