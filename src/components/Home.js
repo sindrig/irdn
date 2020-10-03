@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 import { SocialIcon } from 'react-social-icons';
 import sindri from '../images/sindri.jpg';
 
@@ -12,18 +12,18 @@ const socialUrls = [
 
 
 export default () => (
-    <Grid>
+    <Container fluid>
         <Row>
-            <Col xs={4} md={4}>
-                <img src={sindri} alt="Sindri Guðmundsson" />
+            <Col>
+                <img src={sindri} alt="Sindri Guðmundsson" className="profile-pic" />
             </Col>
-            <Col xs={8} md={8}>
-                <h1>About me</h1>
-                <p>
-                    Developer, currently employed at <a href="https://andes.is/">Andes</a> in Iceland.
-                </p>
-                {socialUrls.map(s => <SocialIcon url={s} color="black" key={s} />)}
+            <Col>
+                    <h1>About me</h1>
+                    <p>
+                        Developer, currently employed at <a href="https://andes.is/">Andes</a> in Iceland.
+                    </p>
+                    {socialUrls.map(s => <SocialIcon url={s} fgColor="white" bgColor="black" key={s} />)}
             </Col>
         </Row>
-    </Grid>
+    </Container>
 );

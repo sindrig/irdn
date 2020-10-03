@@ -17,7 +17,7 @@ const links = {
     cloudfront: <External href="https://aws.amazon.com/cloudfront">CloudFront</External>,
     letsencrypt: <External href="https://letsencrypt.org/">letsencrypt</External>,
     react: <External href="https://reactjs.org/">ReactJS</External>,
-    lambci: <External href="https://github.com/lambci/lambci/">LambCI</External>,
+    githubActions: <External href="https://github.com/features/actions">GitHub Actions</External>,
     github: <External href="https://github.com/sindrig/irdn/">GitHub</External>,
     s3Deploy: <External href="https://www.npmjs.com/package/s3-deploy">s3-deploy</External>,
 };
@@ -31,11 +31,11 @@ const servicesUsed = [
 const serviceStyle = { margin: '0' };
 
 export default () => (
-    <div>
+    <div className="about-container">
         <p style={serviceStyle}>
             Hosted on {links.aws} using:
         </p>
-        {servicesUsed.map(service => <p key={service} style={serviceStyle}>{service}</p>)}
+        {servicesUsed.map((service, i) => <p key={i} style={serviceStyle}>{service}</p>)}
         <p>
             SSL licence from {links.letsencrypt} updated regularly via {links.lambda}.
         </p>
@@ -43,7 +43,7 @@ export default () => (
             Actual page overkilled using {links.react}.
         </p>
         <p>
-            CI using {links.lambci}. Automatically deploys using {links.s3Deploy}.
+            CI using {links.githubActions}. Automatically deploys using {links.s3Deploy}.
         </p>
         <p>
             All code on {links.github}.

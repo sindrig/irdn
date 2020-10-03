@@ -1,0 +1,29 @@
+name: Build and deploy
+
+on:
+  push:
+    branches:
+      - 'master'
+  pull_request: {}
+  workflow_dispatch: {}
+
+jobs:
+  prepare:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 5 #pulling dependencies potentially twice - host OS and docker layer
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Cache for NodeJS dependencies - Docker layer
+        id: cache-deps
+        uses: actions/cache@v2
+        with:
+          path: cache
+          key: node-modules-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+
+      - run: yarn install --frozen-lockfile
+      - run: yarn build
+      - run: make cv
+      - run: yarn deploy

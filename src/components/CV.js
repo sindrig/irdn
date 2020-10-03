@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Grid } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 
 const MARGIN_SIZE = 100;
 
@@ -35,12 +35,12 @@ export default class CV extends Component {
             height: docHeight,
         };
         return (
-            <Grid className="cv-grid">
+            <Container className="cv-grid">
                 <a href="/cv.pdf" download="sindri-gudmundsson-cv.pdf">Download CV</a>
                 <object data="/cv.pdf" type="application/pdf" style={style}>
                     <embed src="/cv.pdf" type="application/pdf" />
                 </object>
-            </Grid>
+            </Container>
         );
     }
 }

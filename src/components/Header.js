@@ -2,31 +2,26 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { Navbar, Nav, NavItem } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
+import { Navbar, Nav } from 'react-bootstrap';
 
 const Header = (props) => {
     const { title, links } = props;
     return (
         <Navbar>
-            <Navbar.Header>
-                <Navbar.Brand>
-                    <Link className="navbar-brand" to={links[0].href} href={links[0].href}>
-                        {title}
-                    </Link>
-                </Navbar.Brand>
-            </Navbar.Header>
+            <Navbar.Brand>
+                <Link className="navbar-brand" to={links[0].href} href={links[0].href}>
+                    {title}
+                </Link>
+            </Navbar.Brand>
             <Nav>
                 {links.map((link, num) => {
                     if (link.hidden && window.location.pathname !== link.href) {
                         return null;
                     }
                     return (
-                        <LinkContainer to={link.href} key={link.key}>
-                            <NavItem eventKey={num + 1}>
-                                {link.text}
-                            </NavItem>
-                        </LinkContainer>
+                        <Nav.Item key={link.key}>
+                            <Nav.Link eventKey={num + 1} href={link.href}>{link.text}</Nav.Link>
+                        </Nav.Item>
                     );
                 })}
             </Nav>
