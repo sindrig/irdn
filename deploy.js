@@ -10,7 +10,7 @@ const config = {
 // TODO check build dir exists
 
 if (process.env.LOCAL) {
-    const credentials = new AWS.SharedIniFileCredentials({ profile: 'irdn' });
+    const credentials = new AWS.SharedIniFileCredentials({ profile: 'irdn-deploy' });
     config.credentials = credentials;
 }
 

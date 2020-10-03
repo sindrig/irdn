@@ -15,6 +15,12 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
 
       - name: Cache for NodeJS dependencies - Docker layer
         id: cache-deps
@@ -27,6 +33,17 @@ jobs:
       - run: yarn build
       - run: make cv
       - uses: satackey/action-docker-layer-caching@v0.0.8
-        # Ignore the failure of a step and avoid terminating the job.
         continue-on-error: true
-      - run: yarn deploy
+      - name: Check deploy
+        run: |
+          STACK=$(aws cloudformation describe-stacks --stack-name=master-irdn)
+          echo "::set-env name=STACK::$STACK"
+        continue-on-error: true
+      - name: Deploy
+        if: ${{ env.STACK != ''}}
+        run: |
+          STACK_OUTPUTS=$(echo $STACK | jq '.Stacks[0].Outputs')
+          BUCKET=$(echo "$STACK_OUTPUTS" | jq '.[] | select(.OutputKey == "WebPageBucket") | .OutputValue')
+          CF_DISTRIBUTION_ID=$(echo "$STACK_OUTPUTS" | jq '.[] | select(.OutputKey == "CloudFrontDistribution") | .OutputValue')
+          aws s3 sync build/ s3://$BUCKET
+          aws cloudfront create-invalidation --distribution-id $CF_DISTRIBUTION_ID --paths /index.html /home /about /cv /
