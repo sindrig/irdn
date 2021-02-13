@@ -7,7 +7,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
     mkdir package
     cp *.py ../utils.py package
 
-    # virtualenv venv
+    virtualenv venv --python=python3.8
     . venv/bin/activate
 
     TMP_DIR=$(mktemp -d)
@@ -17,7 +17,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
         python setup.py install
     )
 
-    cp -r venv/lib/python3.7/site-packages/. package
+    cp -r venv/lib/python3.8/site-packages/. package
 
     cd package
     zip -qyr ../code.zip . -x@../.lambdaignore

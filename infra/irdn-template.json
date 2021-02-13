@@ -90,7 +90,7 @@
                 "Code": {
                     "ZipFile": "print('Not configured')"
                 },
-                "Runtime": "python3.7",
+                "Runtime": "python3.8",
                 "Environment": {
                     "Variables": {
                         "STACK_NAME": {
