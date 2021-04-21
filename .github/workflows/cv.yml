@@ -3,13 +3,14 @@ name: Build CV
 on:
   push:
     branches:
-      - "main"
+      - main
+      - cvcd
     paths:
       - 'src/cv/cv.tex'
       - '.github/workflows/cv.yml'
 
 jobs:
-  build:
+  build-cv:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -17,7 +18,8 @@ jobs:
           fetch-depth: 0
       - name: Build CV
         working-directory: src/cv
-        run: docker run --rm -v $(shell pwd):/data vipintm/xelatex make
+        run: docker run --rm -v $(pwd):/data -v $(pwd)/../images:/images vipintm/xelatex make
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
-        token: {{ secrets.CV_PULL_REQUEST_PAT }}
+        with:
+          token: ${{ secrets.CV_PULL_REQUEST_PAT }}
