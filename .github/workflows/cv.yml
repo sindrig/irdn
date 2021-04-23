@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - cvcd
     paths:
       - 'src/cv/cv.tex'
       - '.github/workflows/cv.yml'
@@ -23,3 +22,5 @@ jobs:
         uses: peter-evans/create-pull-request@v3
         with:
           token: ${{ secrets.CV_PULL_REQUEST_PAT }}
+          title: Updated CV
+          body: Changes to cv.tex resulted in a change of cv.pdf
