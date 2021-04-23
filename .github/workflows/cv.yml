@@ -3,7 +3,7 @@ name: Build CV
 on:
   push:
     branches:
-      - "master"
+      - "main"
     paths:
       - 'src/cv/cv.tex'
       - '.github/workflows/cv.yml'
