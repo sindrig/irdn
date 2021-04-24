@@ -3,24 +3,17 @@ name: Build
 on:
   push:
     branches:
-      - "master"
+      - "main"
   pull_request: {}
   workflow_dispatch: {}
 
 jobs:
   build:
     runs-on: ubuntu-20.04
-    timeout-minutes: 5 #pulling dependencies potentially twice - host OS and docker layer
     steps:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-west-1
 
       - name: Cache for node_modules
         id: cache-deps
@@ -32,7 +25,17 @@ jobs:
       - run: yarn install --frozen-lockfile
         if: steps.cache-deps.outputs.cache-hit != 'true'
       - run: yarn build
+
+      - name: Configure AWS Credentials
+        id: aws-creds
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-1
+        continue-on-error: true
       - name: Check deploy
+        if: ${{ steps.aws-creds.outputs.aws-account-id != '' }}
         run: |
           GIT_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF/refs\/heads\//}}"
           STACK=$(aws cloudformation describe-stacks --stack-name=$GIT_BRANCH-irdn | jq -cM)
