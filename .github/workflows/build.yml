@@ -15,6 +15,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - run: echo "TERRAFORM_VERSION=$(cat .terraform-version)" >> $GITHUB_ENV
+
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
       - name: Cache for node_modules
         id: cache-deps
         uses: actions/cache@v2
@@ -24,6 +30,7 @@ jobs:
 
       - run: yarn install --frozen-lockfile
         if: steps.cache-deps.outputs.cache-hit != 'true'
+
       - run: yarn build
 
       - name: Configure AWS Credentials
@@ -34,18 +41,21 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
         continue-on-error: true
+
       - name: Check deploy
         if: ${{ steps.aws-creds.outputs.aws-account-id != '' }}
         run: |
           GIT_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF/refs\/heads\//}}"
-          STACK=$(aws cloudformation describe-stacks --stack-name=$GIT_BRANCH-irdn | jq -cM)
-          echo "STACK=$STACK" >> $GITHUB_ENV
+          ls infra/$GIT_BRANCH
+          echo "GIT_BRANCH=$GIT_BRANCH" >> $GITHUB_ENV
         continue-on-error: true
+
       - name: Deploy
-        if: ${{ env.STACK != ''}}
+        if: ${{ env.GIT_BRANCH != ''}}
         run: |
-          STACK_OUTPUTS=$(echo $STACK | jq '.Stacks[0].Outputs')
-          BUCKET=$(echo "$STACK_OUTPUTS" | jq '.[] | select(.OutputKey == "WebPageBucket") | .OutputValue' -r)
-          CF_DISTRIBUTION_ID=$(echo "$STACK_OUTPUTS" | jq '.[] | select(.OutputKey == "CloudFrontDistribution") | .OutputValue' -r)
-          aws s3 sync build/ s3://$BUCKET
+          cd infra/$GIT_BRANCH
+          S3_BUCKET=$(terraform output s3-bucket)
+          CF_DISTRIBUTION_ID=$(terraform output cf-id)
+
+          aws s3 sync build/ s3://$S3_BUCKET
           aws cloudfront create-invalidation --distribution-id $CF_DISTRIBUTION_ID --paths /index.html /home /about /cv /
