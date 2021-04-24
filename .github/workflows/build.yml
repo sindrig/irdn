@@ -20,6 +20,7 @@ jobs:
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
+          terraform_wrapper: false
 
       - name: Cache for node_modules
         id: cache-deps
@@ -58,6 +59,8 @@ jobs:
 
           S3_BUCKET=$(terraform output s3-bucket)
           CF_DISTRIBUTION_ID=$(terraform output cf-id)
+
+          cd -
 
           aws s3 sync build/ s3://$S3_BUCKET
           aws cloudfront create-invalidation --distribution-id $CF_DISTRIBUTION_ID --paths /index.html /home /about /cv /
