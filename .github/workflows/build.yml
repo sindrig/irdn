@@ -57,8 +57,10 @@ jobs:
           cd infra/$GIT_BRANCH
           terraform init
 
-          S3_BUCKET=$(terraform output s3-bucket)
-          CF_DISTRIBUTION_ID=$(terraform output cf-id)
+          S3_BUCKET=$(terraform output -raw s3-bucket)
+          CF_DISTRIBUTION_ID=$(terraform output -raw cf-id)
+
+          cd -
 
           aws s3 sync build/ s3://$S3_BUCKET
           aws cloudfront create-invalidation --distribution-id $CF_DISTRIBUTION_ID --paths /index.html /home /about /cv /
