@@ -6,6 +6,7 @@ import { Navbar, Nav } from 'react-bootstrap';
 
 const Header = (props) => {
     const { title, links } = props;
+    const href = (h) => `/#${h}`
     return (
         <Navbar>
             <Navbar.Brand>
@@ -20,7 +21,7 @@ const Header = (props) => {
                     }
                     return (
                         <Nav.Item key={link.key}>
-                            <Nav.Link eventKey={num + 1} href={link.href}>{link.text}</Nav.Link>
+                            <Nav.Link eventKey={num + 1} href={href(link.href)}>{link.text}</Nav.Link>
                         </Nav.Item>
                     );
                 })}
