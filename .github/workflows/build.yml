@@ -53,6 +53,7 @@ jobs:
       - name: Deploy
         if: ${{ env.GIT_BRANCH != ''}}
         run: |
+          set -x
           cd infra/$GIT_BRANCH
           S3_BUCKET=$(terraform output s3-bucket)
           CF_DISTRIBUTION_ID=$(terraform output cf-id)
