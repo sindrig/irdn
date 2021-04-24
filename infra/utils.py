@@ -7,13 +7,8 @@ import time
 
 
 def get_stack_outputs(client):
-    outputs = client.describe_stacks(
-        StackName=get_stack_name()
-    )['Stacks'][0]['Outputs']
-    return {
-        output['OutputKey']: output['OutputValue']
-        for output in outputs
-    }
+    outputs = client.describe_stacks(StackName=get_stack_name())['Stacks'][0]['Outputs']
+    return {output['OutputKey']: output['OutputValue'] for output in outputs}
 
 
 def get_branch():
@@ -43,7 +38,7 @@ def get_domain():
         return os.getenv('DOMAIN')
     suffix = 'irdn.is'
     branch = get_branch()
-    if branch == 'master':
+    if branch == 'main':
         return suffix
     return '%s.%s' % (branch, suffix)
 
@@ -60,23 +55,19 @@ def wait_for_stack_update_finish(cloudformation, stack_name):
     last_status = None
     iterations = 0
     while True:
-        stacks = cloudformation.describe_stacks(
-            StackName=stack_name
-        )
+        stacks = cloudformation.describe_stacks(StackName=stack_name)
         status = stacks['Stacks'][0]['StackStatus']
         if status != last_status:
             print(status)
         last_status = status
         if (
-            status.endswith('COMPLETE') or
-            status == 'ROLLBACK_FAILED' or
-            status == 'DELETE_FAILED'
+            status.endswith('COMPLETE')
+            or status == 'ROLLBACK_FAILED'
+            or status == 'DELETE_FAILED'
         ):
             if status not in ('CREATE_COMPLETE', 'UPDATE_COMPLETE'):
                 print('Something went wrong')
-                events = cloudformation.describe_stack_events(
-                    StackName=stack_name
-                )
+                events = cloudformation.describe_stack_events(StackName=stack_name)
                 for event in events['StackEvents']:
                     if event['Timestamp'].replace(tzinfo=None) < starttime:
                         break
@@ -84,7 +75,7 @@ def wait_for_stack_update_finish(cloudformation, stack_name):
                         event['ResourceStatus'],
                         event['ResourceType'],
                         event['LogicalResourceId'],
-                        event.get('ResourceStatusReason', '')
+                        event.get('ResourceStatusReason', ''),
                     )
             break
         time.sleep(sleeptime)
