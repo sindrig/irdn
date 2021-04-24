@@ -55,7 +55,6 @@ jobs:
         run: |
           set -x
           cd infra/$GIT_BRANCH
-          aws sts get-caller-identity
           terraform init
           S3_BUCKET=$(terraform output s3-bucket)
           CF_DISTRIBUTION_ID=$(terraform output cf-id)
