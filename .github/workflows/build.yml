@@ -35,7 +35,7 @@ jobs:
           aws-region: eu-west-1
         continue-on-error: true
       - name: Check deploy
-        if: ${{ outputs.aws-creds.aws-account-id != '' }}
+        if: ${{ steps.aws-creds.outputs.aws-account-id != '' }}
         run: |
           GIT_BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF/refs\/heads\//}}"
           STACK=$(aws cloudformation describe-stacks --stack-name=$GIT_BRANCH-irdn | jq -cM)
