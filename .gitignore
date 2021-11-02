@@ -1,4 +1,4 @@
-/infra/main/.terraform/
+.terraform/
 /cv/cv.aux
 /cv/cv.log
 /cv/cv.out
