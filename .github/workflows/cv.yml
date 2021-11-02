@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 name: Build CV
 
 on:
@@ -5,7 +6,7 @@ on:
     branches:
       - main
     paths:
-      - 'src/cv/cv.tex'
+      - 'cv/cv.tex'
       - '.github/workflows/cv.yml'
 
 jobs:

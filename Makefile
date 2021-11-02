@@ -1,3 +1,5 @@
 cv:
-	docker run --rm -v `pwd`/src/cv:/data -v `pwd`/src/images:/images moss/xelatex make
-	mv -f src/cv/cv.pdf public
+	docker run --rm -v `pwd`/cv:/data -v `pwd`/public:/public moss/xelatex make
+	mv -f cv/cv.pdf public
+
+.PHONY: cv
