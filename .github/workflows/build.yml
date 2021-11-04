@@ -5,6 +5,9 @@ on:
   push:
     branches:
       - "main"
+    paths:
+      - 'public/'
+      - '.github/workflows/build.yml'
   pull_request: {}
   workflow_dispatch: {}
 
