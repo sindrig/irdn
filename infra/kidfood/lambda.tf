@@ -26,7 +26,7 @@ module "lambda_function" {
 resource "aws_cloudwatch_event_rule" "schedule" {
   name                = "RunKidFood"
   description         = "Posts kid food today to slack"
-  schedule_expression = "cron(15 8 * * MON-FRI *)"
+  schedule_expression = "cron(15 8 ? * MON-FRI *)"
 }
 
 resource "aws_cloudwatch_event_target" "scan_ami_lambda_function" {
