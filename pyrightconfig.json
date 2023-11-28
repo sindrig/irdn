@@ -1,0 +1,11 @@
+{
+    "venvPath": ".",
+    "venv": ".venv",
+    "reportUnusedVariable": "error",
+    "reportUnusedImport": "error",
+    "reportUnusedClass": "error",
+    "reportUnusedFunction": "error",
+    "reportDeprecated": "error",
+    "reportPrivateImportUsage": "none",
+    "reportMissingModuleSource": "none"
+}

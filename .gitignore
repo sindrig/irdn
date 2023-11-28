@@ -2,3 +2,7 @@
 /cv/cv.aux
 /cv/cv.log
 /cv/cv.out
+/.direnv/
+/.envrc-local
+/.venv
+/infra/kidfood/src/__pycache__/

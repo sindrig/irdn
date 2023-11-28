@@ -7,7 +7,7 @@ module "lambda_function" {
   function_name = "kidfood"
   description   = "Post what the kids are having for lunch to slack"
   handler       = "index.handler"
-  runtime       = "python3.9"
+  runtime       = "python3.11"
   publish       = true
 
   source_path = "./src/"
@@ -26,7 +26,7 @@ module "lambda_function" {
 resource "aws_cloudwatch_event_rule" "schedule" {
   name                = "RunKidFood"
   description         = "Posts kid food today to slack"
-  schedule_expression = "cron(15 8 * * ? *)"
+  schedule_expression = "cron(15 8 * * MON-FRI *)"
 }
 
 resource "aws_cloudwatch_event_target" "scan_ami_lambda_function" {

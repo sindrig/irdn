@@ -16,7 +16,7 @@ variable "forward_emails" {
 module "ses_lambda_forwarder" {
   source = "cloudposse/ses-lambda-forwarder/aws"
   # Cloud Posse recommends pinning every module to a specific version
-  version = "0.11.0"
+  version = "0.12.0"
 
   namespace = "irdn"
   stage     = "prod"
@@ -28,5 +28,5 @@ module "ses_lambda_forwarder" {
   relay_email    = var.relay_email
   forward_emails = var.forward_emails
 
-  lambda_runtime = "nodejs14.x"
+  lambda_runtime = "nodejs18.x"
 }
