@@ -94,8 +94,9 @@ async def fossvogsskoli(d: datetime.datetime):
             },
         },
     ]
-    for line in entry.text.splitlines():
-        if exp_header in line:
+    lines = entry.text.splitlines()
+    for line in lines:
+        if exp_header in line and '-' not in line:
             found = True
         elif found:
             if line.strip():
