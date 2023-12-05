@@ -85,7 +85,7 @@ async def fossvogsskoli(d: datetime.datetime):
         return [text_section("Could not find entry for fossvogsskoli")]
     exp_header = f"{d.day}. {months[d.month - 1]}".upper()
     found = False
-    blocks = [
+    header_blocks = [
         {
             "type": "header",
             "text": {
@@ -94,17 +94,18 @@ async def fossvogsskoli(d: datetime.datetime):
             },
         },
     ]
+    food_blocks = []
     lines = entry.text.splitlines()
     for line in lines:
         if exp_header in line and '-' not in line:
             found = True
         elif found:
-            if line.strip():
-                blocks.append(text_section(line.strip()))
-            else:
+            if 'dagur' in line.lower():
                 break
+            elif line.strip():
+                food_blocks.append(text_section(line.strip()))
 
-    return blocks
+    return header_blocks + food_blocks
 
 
 async def divider():
