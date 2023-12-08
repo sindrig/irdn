@@ -83,7 +83,7 @@ async def fossvogsskoli(d: datetime.datetime):
     entry = soup.find("div", {"class": "entryContent"})
     if not entry:
         return [text_section("Could not find entry for fossvogsskoli")]
-    exp_header = f"{d.day}. {months[d.month - 1]}".upper()
+    exp_header = f"{d.day}. {months[d.month - 1][:3]}".upper()
     found = False
     header_blocks = [
         {
