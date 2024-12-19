@@ -6,8 +6,8 @@ on:
     branches:
       - "main"
     paths:
-      - 'public/'
-      - '.github/workflows/build.yml'
+      - "public/"
+      - ".github/workflows/build.yml"
   pull_request: {}
   workflow_dispatch: {}
 
@@ -51,7 +51,7 @@ jobs:
 
           S3_BUCKET=$(terraform output -raw s3-bucket)
           CF_DISTRIBUTION_ID=$(terraform output -raw cf-id)
-          
+
           cd -
 
           aws s3 sync public/ s3://$S3_BUCKET

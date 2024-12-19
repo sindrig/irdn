@@ -6,8 +6,8 @@ on:
     branches:
       - main
     paths:
-      - 'cv/cv.tex'
-      - '.github/workflows/cv.yml'
+      - "cv/cv.tex"
+      - ".github/workflows/cv.yml"
 
 jobs:
   build-cv:
