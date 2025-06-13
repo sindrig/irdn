@@ -76,14 +76,14 @@ months = [
 async def fossvogsskoli(d: datetime.datetime):
     async with httpx.AsyncClient() as client:
         r = await client.get(
-            "https://www.herinn.is/is/matsedill",
+            "https://www.herinn.is/is/kastalakaffi/skolamatsedill",
         )
         r.raise_for_status()
         soup = bs4.BeautifulSoup(r.text, features="html.parser")
     entry = soup.find("div", {"class": "entryContent"})
     if not entry:
         return [text_section("Could not find entry for fossvogsskoli")]
-    exp_header = f"{d.day}. {months[d.month - 1][:3]}".upper()
+    exp_header = f"{d.day}. {months[d.month - 1][:3]}".lower()
     found = False
     header_blocks = [
         {
@@ -97,10 +97,10 @@ async def fossvogsskoli(d: datetime.datetime):
     food_blocks = []
     lines = entry.text.splitlines()
     for line in lines:
-        if exp_header in line and '-' not in line:
+        if exp_header in line.lower() and "-" not in line:
             found = True
         elif found:
-            if 'dagur' in line.lower():
+            if "dagur" in line.lower():
                 break
             elif line.strip():
                 food_blocks.append(text_section(line.strip()))

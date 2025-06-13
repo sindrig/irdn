@@ -28,5 +28,5 @@ module "ses_lambda_forwarder" {
   relay_email    = var.relay_email
   forward_emails = var.forward_emails
 
-  lambda_runtime = "nodejs18.x"
+  lambda_runtime = "nodejs22.x"
 }

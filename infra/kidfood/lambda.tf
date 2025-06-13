@@ -7,8 +7,10 @@ module "lambda_function" {
   function_name = "kidfood"
   description   = "Post what the kids are having for lunch to slack"
   handler       = "index.handler"
-  runtime       = "python3.11"
+  runtime       = "python3.13"
   publish       = true
+
+  timeout = 30
 
   source_path = "./src/"
 
