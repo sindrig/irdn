@@ -28,7 +28,7 @@ async def furuskogur(d: datetime.datetime):
 
     async with httpx.AsyncClient() as client:
         r = await client.get(
-            "https://www.skolamatur.is/json/menu/?school=1686",
+            "https://www.skolamatur.is/json/menu/?school=46",
         )
         r.raise_for_status()
         data = r.json()

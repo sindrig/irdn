@@ -2,7 +2,8 @@ data "aws_ssm_parameter" "webhook-url" {
   name = "/irdn/kidfood/slack-webhook-url"
 }
 module "lambda_function" {
-  source = "terraform-aws-modules/lambda/aws"
+  source  = "terraform-aws-modules/lambda/aws"
+  version = "8.1.0"
 
   function_name = "kidfood"
   description   = "Post what the kids are having for lunch to slack"
