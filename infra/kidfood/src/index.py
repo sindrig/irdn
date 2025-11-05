@@ -24,19 +24,17 @@ def text_section(text):
 
 
 async def furuskogur(d: datetime.datetime):
-    today_string = d.strftime("%Y-%m-%dT00:00:00")
+    today_string = d.strftime("%d.%m.%Y")
 
     async with httpx.AsyncClient() as client:
-        r = await client.get(
-            "https://www.skolamatur.is/json/menu/?school=46",
-        )
+        r = await client.get("https://api.skolamatur.is/api/external/menu/?school=46")
         r.raise_for_status()
         data = r.json()
     print(data)
     for day in data["Days"]:
         if day["Date"] == today_string:
             print("Found day", day)
-            return [
+            res = [
                 {
                     "type": "header",
                     "text": {
@@ -45,14 +43,20 @@ async def furuskogur(d: datetime.datetime):
                     },
                 },
                 text_section(
-                    f"*Hádegi*: <https://www.skolamatur.is/rettir/{day['MainCourseSlug']}|{day['MainCourse']}>",
+                    f"*Hádegi*: {day['MainCourse']}",
                 ),
-                text_section(
-                    f"*Vegan*: <https://www.skolamatur.is/rettir/{day['SideCourseSlug']}|{day['SideCourse']}>"
-                ),
-                text_section(f"*Meðlæti*: {day['Extra']}"),
-                text_section(f"*Síðdegi*: {day['Afternoon']}"),
+                text_section(f"*Vegan*: {day['SideCourse']}"),
+                text_section(f"*Meðlæti*: {day['SideDish']}"),
             ]
+            try:
+                res.append(
+                    text_section(
+                        f"*Síðdegi*: {', '.join([c['name'] for c in day['Afternoon']])}"
+                    ),
+                )
+            except KeyError:
+                pass
+            return res
     else:
         return [text_section("Could not find menu for furuskogur")]
 
