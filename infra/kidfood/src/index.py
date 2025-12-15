@@ -1,4 +1,5 @@
 import asyncio
+import pprint
 import datetime
 import itertools
 import json
@@ -9,8 +10,6 @@ import bs4
 import httpx
 
 webhook_url = os.getenv("SLACK_WEBHOOK_URL")
-if not webhook_url:
-    raise RuntimeError("Missing SLACK_WEBHOOK_URL")
 
 
 def text_section(text):
@@ -80,7 +79,7 @@ months = [
 async def fossvogsskoli(d: datetime.datetime):
     async with httpx.AsyncClient() as client:
         r = await client.get(
-            "https://www.herinn.is/is/kastalakaffi/skolamatsedill",
+            "https://www.herinn.is/is/kastalakaffi/matsedill",
         )
         r.raise_for_status()
         soup = bs4.BeautifulSoup(r.text, features="html.parser")
@@ -116,27 +115,21 @@ async def divider():
     return [{"type": "divider"}]
 
 
-async def main():
+async def main(make_request: bool = True):
     today = datetime.datetime.now()
 
-    # message = {"text": day["Name"], "blocks": furuskogur(today)}
+    if not webhook_url:
+        raise RuntimeError("Missing SLACK_WEBHOOK_URL")
     parts = await asyncio.gather(furuskogur(today), divider(), fossvogsskoli(today))
     message = {"blocks": list(itertools.chain(*parts))}
-    req = urllib.request.Request(
-        webhook_url,
-        data=json.dumps(message).encode("utf8"),
-        headers={"content-type": "application/json"},
-    )
-    urllib.request.urlopen(req)
-
-    # {"type": "divider"},
-    # {
-    #     "type": "header",
-    #     "text": {
-    #         "type": "plain_text",
-    #         "text": "Fossvogsskóli",
-    #     },
-    # },
+    pprint.pprint(message)
+    if make_request:
+        req = urllib.request.Request(
+            webhook_url,
+            data=json.dumps(message).encode("utf8"),
+            headers={"content-type": "application/json"},
+        )
+        urllib.request.urlopen(req)
 
 
 def handler(event, context):
@@ -144,7 +137,7 @@ def handler(event, context):
         loop = asyncio.get_running_loop()
     except RuntimeError:
         loop = asyncio.new_event_loop()
-    loop.run_until_complete(main())
+    loop.run_until_complete(main(make_request=event is not None))
 
 
 if __name__ == "__main__":
