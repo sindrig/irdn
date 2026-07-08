@@ -28,6 +28,7 @@ module "lambda_function" {
 
 resource "aws_cloudwatch_event_rule" "schedule" {
   name                = "RunKidFood"
+  state               = "DISABLED"
   description         = "Posts kid food today to slack"
   schedule_expression = "cron(15 8 ? * MON-FRI *)"
 }
