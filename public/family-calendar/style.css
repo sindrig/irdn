@@ -1,0 +1,6 @@
+body { font: 1rem/1.6 system-ui, sans-serif; color: #202124; background: #fff; margin: 0; }
+main, nav, footer { max-width: 48rem; margin: auto; padding: 1rem 1.25rem; }
+a { color: #0645ad; } a:focus-visible { outline: 3px solid #0645ad; outline-offset: 3px; }
+h1, h2 { line-height: 1.25; } h2 { margin-top: 2rem; }
+.draft { border-left: 4px solid #805500; padding: .75rem 1rem; background: #fff5d6; }
+footer { border-top: 1px solid #ddd; } nav a { display: inline-block; margin-right: 1rem; }
