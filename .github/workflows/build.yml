@@ -6,7 +6,7 @@ on:
     branches:
       - "main"
     paths:
-      - "public/"
+      - "public/**"
       - ".github/workflows/build.yml"
   pull_request: {}
   workflow_dispatch: {}
